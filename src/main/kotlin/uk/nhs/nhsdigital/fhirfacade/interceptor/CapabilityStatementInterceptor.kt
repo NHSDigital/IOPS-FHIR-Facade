@@ -7,10 +7,12 @@ import ca.uhn.fhir.interceptor.api.Pointcut
 import org.hl7.fhir.instance.model.api.IBaseConformance
 import org.hl7.fhir.r4.model.*
 import uk.nhs.nhsdigital.fhirfacade.configuration.FHIRServerProperties
+import uk.nhs.nhsdigital.fhirfacade.configuration.MessageProperties
 
 @Interceptor
 class CapabilityStatementInterceptor(
-    val fhirServerProperties: FHIRServerProperties
+    val fhirServerProperties: FHIRServerProperties,
+    val messageProperties: MessageProperties
 ) {
 
 
@@ -20,7 +22,7 @@ class CapabilityStatementInterceptor(
         // Cast to the appropriate version
         val cs: CapabilityStatement = theCapabilityStatement as CapabilityStatement
 
-        cs.implementation.url = fhirServerProperties.server.baseUrl
+        cs.implementation.url = messageProperties.getFhirServerBaseUrl()
         cs.implementation.description = "NHS Digital UKCore API Reference Implementation"
     }
 

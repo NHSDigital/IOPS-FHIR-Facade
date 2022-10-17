@@ -15,34 +15,34 @@ import uk.nhs.nhsdigital.fhirfacade.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class MedicationRequestProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<MedicationRequest> {
-        return MedicationRequest::class.java
+class ImmunisationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
+    override fun getResourceType(): Class<Immunization> {
+        return Immunization::class.java
     }
 
     @Read
-    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): MedicationRequest? {
+    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Immunization? {
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
-        return if (resource is MedicationRequest) resource else null
+        return if (resource is Immunization) resource else null
     }
 
     @Search
     fun search(
         httpRequest : HttpServletRequest,
-        @OptionalParam(name = MedicationRequest.SP_PATIENT) patient : ReferenceParam?,
-        @OptionalParam(name = MedicationRequest.SP_AUTHOREDON)  date : DateRangeParam?,
-        @OptionalParam(name = MedicationRequest.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = MedicationRequest.SP_STATUS)  status :TokenParam?,
-        @OptionalParam(name = MedicationRequest.SP_RES_ID)  resid : StringParam?
-    ): List<MedicationRequest> {
-        val medicationRequests = mutableListOf<MedicationRequest>()
+        @OptionalParam(name = Immunization.SP_PATIENT) patient : ReferenceParam?,
+        @OptionalParam(name = Immunization.SP_DATE)  date : DateRangeParam?,
+        @OptionalParam(name = Immunization.SP_IDENTIFIER)  identifier :TokenParam?,
+        @OptionalParam(name = Immunization.SP_STATUS)  status :TokenParam?,
+        @OptionalParam(name = Immunization.SP_RES_ID)  resid : StringParam?
+    ): List<Immunization> {
+        val immunisations = mutableListOf<Immunization>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
         if (resource != null && resource is Bundle) {
             for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is MedicationRequest) medicationRequests.add(entry.resource as MedicationRequest)
+                if (entry.hasResource() && entry.resource is Immunization) immunisations.add(entry.resource as Immunization)
             }
         }
 
-        return medicationRequests
+        return immunisations
     }
 }

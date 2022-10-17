@@ -14,7 +14,7 @@ class MessageProperties {
 
     val HAPI_PROPERTIES = "message.properties"
 
-
+    val FHIR_SERVER_BASE_URL = "server.url"
     val SERVER_FACILITY = "server.facility"
     val SERVER_APPLICATION = "server.application"
 
@@ -181,6 +181,10 @@ class MessageProperties {
 
     fun getServerApplication(): String? {
         return getProperty(SERVER_APPLICATION, "EPR")
+    }
+
+    fun getFhirServerBaseUrl(): String? {
+        return getProperty(FHIR_SERVER_BASE_URL, "http://127.0.0.1/FHIR/R4")
     }
 
     fun getHl7RouteException(): String? {

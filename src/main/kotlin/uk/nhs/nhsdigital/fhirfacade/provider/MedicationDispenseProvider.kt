@@ -9,12 +9,14 @@ import ca.uhn.fhir.rest.param.ReferenceParam
 import ca.uhn.fhir.rest.param.StringParam
 import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
 import uk.nhs.nhsdigital.fhirfacade.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
+@Tag(name="Medications")
 class MedicationDispenseProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
     override fun getResourceType(): Class<MedicationDispense> {
         return MedicationDispense::class.java

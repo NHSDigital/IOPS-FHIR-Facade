@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.openapi.OpenApiInterceptor
 import ca.uhn.fhir.rest.server.RestfulServer
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.nhs.nhsdigital.fhirfacade.configuration.FHIRServerProperties
+import uk.nhs.nhsdigital.fhirfacade.configuration.MessageProperties
 import uk.nhs.nhsdigital.fhirfacade.interceptor.AWSAuditEventLoggingInterceptor
 import uk.nhs.nhsdigital.fhirfacade.interceptor.CapabilityStatementInterceptor
 import uk.nhs.nhsdigital.fhirfacade.provider.*
@@ -15,7 +16,8 @@ import javax.servlet.annotation.WebServlet
 @WebServlet("/FHIR/R4/*", loadOnStartup = 1, displayName = "FHIR Facade")
 class FHIRR4RestfulServer(
     @Qualifier("R4") fhirContext: FhirContext,
-    public val fhirServerProperties: FHIRServerProperties,
+    val fhirServerProperties: FHIRServerProperties,
+    val messageProperties: MessageProperties,
     public val encounterProvider: EncounterProvider,
     public val patientProvider: PatientProvider,
     val medicationDispenseProvider: MedicationDispenseProvider,
@@ -25,7 +27,13 @@ class FHIRR4RestfulServer(
     val organizationProvider: OrganizationProvider,
 
     val serviceRequestProvider: ServiceRequestProvider,
-    val taskProvider: TaskProvider
+    val taskProvider: TaskProvider,
+
+    val allergyIntoleranceProvider: AllergyIntoleranceProvider,
+    val conditionProvider: ConditionProvider,
+    val immunisationProvider: ImmunisationProvider,
+    val observationProvider: ObservationProvider,
+    val procedureProvider: ProcedureProvider
 ) : RestfulServer(fhirContext) {
 
     override fun initialize() {
@@ -46,13 +54,19 @@ class FHIRR4RestfulServer(
         registerProvider(taskProvider)
         registerProvider(serviceRequestProvider)
 
+        registerProvider(allergyIntoleranceProvider)
+        registerProvider(conditionProvider)
+        registerProvider(immunisationProvider)
+        registerProvider(observationProvider)
+        registerProvider(procedureProvider)
+
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(
                 this.fhirContext,
                 fhirServerProperties
             )
         interceptorService.registerInterceptor(awsAuditEventLoggingInterceptor)
-        registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties))
+        registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties, messageProperties))
 
 
         // Now register the interceptor
