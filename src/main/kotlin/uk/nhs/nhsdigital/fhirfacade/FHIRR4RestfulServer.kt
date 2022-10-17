@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.server.RestfulServer
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.nhs.nhsdigital.fhirfacade.configuration.FHIRServerProperties
 import uk.nhs.nhsdigital.fhirfacade.interceptor.AWSAuditEventLoggingInterceptor
+import uk.nhs.nhsdigital.fhirfacade.interceptor.CapabilityStatementInterceptor
 import uk.nhs.nhsdigital.fhirfacade.provider.*
 import java.util.*
 import javax.servlet.annotation.WebServlet
@@ -51,6 +52,8 @@ class FHIRR4RestfulServer(
                 fhirServerProperties
             )
         interceptorService.registerInterceptor(awsAuditEventLoggingInterceptor)
+        registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties))
+
 
         // Now register the interceptor
         // Now register the interceptor
