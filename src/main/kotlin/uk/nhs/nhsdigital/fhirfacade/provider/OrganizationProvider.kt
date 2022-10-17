@@ -15,33 +15,33 @@ import uk.nhs.nhsdigital.fhirfacade.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class EncounterProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Encounter> {
-        return Encounter::class.java
+class OrganizationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
+    override fun getResourceType(): Class<Organization> {
+        return Organization::class.java
     }
 
     @Read
-    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Encounter? {
+    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Organization? {
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
-        return if (resource is Encounter) resource else null
+        return if (resource is Organization) resource else null
     }
 
     @Search
     fun search(
         httpRequest : HttpServletRequest,
-        @OptionalParam(name = Encounter.SP_PATIENT) encounter : ReferenceParam?,
-        @OptionalParam(name = Encounter.SP_DATE)  date : DateRangeParam?,
-        @OptionalParam(name = Encounter.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Encounter.SP_RES_ID)  resid : StringParam?
-    ): List<Encounter> {
-        val encounters = mutableListOf<Encounter>()
+        @OptionalParam(name = Organization.SP_NAME) name : StringParam?,
+        @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) postcode : StringParam?,
+        @OptionalParam(name = Organization.SP_IDENTIFIER)  identifier :TokenParam?,
+        @OptionalParam(name = Organization.SP_RES_ID)  resid : StringParam?
+    ): List<Organization> {
+        val organisations = mutableListOf<Organization>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
         if (resource != null && resource is Bundle) {
             for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Encounter) encounters.add(entry.resource as Encounter)
+                if (entry.hasResource() && entry.resource is Organization) organisations.add(entry.resource as Organization)
             }
         }
 
-        return encounters
+        return organisations
     }
 }

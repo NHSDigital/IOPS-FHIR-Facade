@@ -16,7 +16,15 @@ class FHIRR4RestfulServer(
     @Qualifier("R4") fhirContext: FhirContext,
     public val fhirServerProperties: FHIRServerProperties,
     public val encounterProvider: EncounterProvider,
-    public val patientProvider: PatientProvider
+    public val patientProvider: PatientProvider,
+    val medicationDispenseProvider: MedicationDispenseProvider,
+    val medicationRequestProvider: MedicationRequestProvider,
+    val practitionerProvider: PractitionerProvider,
+    val practitionerRoleProvider: PractitionerRoleProvider,
+    val organizationProvider: OrganizationProvider,
+
+    val serviceRequestProvider: ServiceRequestProvider,
+    val taskProvider: TaskProvider
 ) : RestfulServer(fhirContext) {
 
     override fun initialize() {
@@ -25,7 +33,17 @@ class FHIRR4RestfulServer(
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
         registerProvider(patientProvider)
+        registerProvider(organizationProvider)
+        registerProvider(practitionerProvider)
+        registerProvider(practitionerRoleProvider)
+
         registerProvider(encounterProvider)
+
+        registerProvider(medicationDispenseProvider)
+        registerProvider(medicationRequestProvider)
+
+        registerProvider(taskProvider)
+        registerProvider(serviceRequestProvider)
 
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(

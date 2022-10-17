@@ -1,18 +1,33 @@
 package uk.nhs.nhsdigital.fhirfacade.interceptor
 
+import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.rest.client.api.IClientInterceptor
 import ca.uhn.fhir.rest.client.api.IHttpRequest
 import ca.uhn.fhir.rest.client.api.IHttpResponse
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder
 import com.amazonaws.services.cognitoidp.model.AuthFlowType
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType
 import com.amazonaws.services.cognitoidp.model.InitiateAuthRequest
 import com.amazonaws.services.cognitoidp.model.InitiateAuthResult
+import org.apache.commons.io.IOUtils
+import org.hl7.fhir.r4.model.Bundle
+import org.hl7.fhir.r4.model.Patient
+import org.hl7.fhir.r4.model.Resource
+import org.springframework.stereotype.Component
 import uk.nhs.nhsdigital.fhirfacade.configuration.MessageProperties
+import uk.nhs.nhsdigital.fhirfacade.model.ResponseObject
+import java.io.BufferedReader
+import java.io.FileNotFoundException
 import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.*
 
-class CognitoAuthInterceptor(val messageProperties: MessageProperties) : IClientInterceptor {
+@Component
+class CognitoAuthInterceptor(val messageProperties: MessageProperties, val ctx : FhirContext) : IClientInterceptor {
 
     var authenticationResult: AuthenticationResultType? = null
 
@@ -54,4 +69,48 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties) : IClient
         authenticationResult = result.getAuthenticationResult()
         return authenticationResult
     }
+
+    @Throws(Exception::class)
+    fun readFromUrl(path: String, queryParams: String?): Resource? {
+        val responseObject = ResponseObject()
+        val url = messageProperties.getCdrFhirServer()
+        var myUrl: URL? = null
+        myUrl = if (queryParams != null) {
+            URL("$url$path?$queryParams")
+        } else {
+            URL(url + path)
+        }
+        val conn = myUrl.openConnection() as HttpURLConnection
+        getAccessToken()
+        val basicAuth = "Bearer "+authenticationResult!!.idToken
+        conn.setRequestProperty("Authorization", basicAuth)
+        conn.setRequestProperty("x-api-key",messageProperties.getAwsApiKey())
+        conn.requestMethod = "GET"
+        return try {
+            conn.connect()
+            val `is` = InputStreamReader(conn.inputStream)
+            try {
+                val rd = BufferedReader(`is`)
+                responseObject.responseCode = 200
+                val resource = ctx.newJsonParser().parseResource(IOUtils.toString(rd)) as Resource
+
+                if (resource is Bundle) {
+                    val bundle = resource
+                    if (bundle.hasEntry()) {
+                        for (entryComponent in bundle.entry) {
+
+                        }
+                    }
+                }
+                resource
+            } finally {
+                `is`.close()
+            }
+        } catch (ex: FileNotFoundException) {
+            null
+        } catch (ex: IOException) {
+            throw UnprocessableEntityException(ex.message)
+        }
+    }
+
 }

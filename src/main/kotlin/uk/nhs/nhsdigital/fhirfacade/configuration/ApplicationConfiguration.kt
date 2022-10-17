@@ -23,10 +23,7 @@ open class ApplicationConfiguration {
         return RestTemplate()
     }
 
-    @Bean
-    fun getCognitoService(messageProperties: MessageProperties): CognitoAuthInterceptor? {
-        return CognitoAuthInterceptor(messageProperties)
-    }
+
 
     @Bean
     fun getAWSclient(cognitoIdpInterceptor: CognitoAuthInterceptor?, mmessageProperties: MessageProperties, @Qualifier("R4") ctx : FhirContext): IGenericClient? {
