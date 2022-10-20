@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>uk.nhs.nhsdigital</groupId>
-    <artifactId>iops-fhir-facade</artifactId>
+    <artifactId>iops-fhir-qedm</artifactId>
     <version>1.0.3</version>
-    <name>iops-fhir-facade</name>
+    <name>iops-fhir-qedm</name>
     <description>IOPS FHIR Facade</description>
 
     <properties>
@@ -98,11 +98,7 @@
             <artifactId>hapi-fhir-validation-resources-r4</artifactId>
             <version>${fhir.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-server-openapi</artifactId>
-            <version>${fhir.version}</version>
-        </dependency>
+
 
 
         <!-- AWS -->
@@ -140,7 +136,30 @@
             <version>20210307</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>${swagger_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger_version}</version>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.swagger.parser.v3/swagger-parser -->
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${parser_version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.4</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
@@ -151,7 +170,7 @@
     </dependencies>
 
     <build>
-        <finalName>fhir-facade</finalName>
+        <finalName>fhir-qedm</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
