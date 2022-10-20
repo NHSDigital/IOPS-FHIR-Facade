@@ -33,7 +33,7 @@ class PatientProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IRes
         @OptionalParam(name= Patient.SP_GIVEN) givenName :StringParam?,
         @OptionalParam(name = Patient.SP_IDENTIFIER) identifier :TokenParam?,
         @OptionalParam(name= Patient.SP_NAME) name :StringParam?,
-        @OptionalParam(name= Patient.SP_PHONE) phone : StringParam?
+        @OptionalParam(name= Patient.SP_TELECOM) phone : StringParam?
     ): List<Patient> {
         val patients = mutableListOf<Patient>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
