@@ -33,7 +33,7 @@ class MedicationDispenseProvider(var cognitoAuthInterceptor: CognitoAuthIntercep
         httpRequest : HttpServletRequest,
         @OptionalParam(name = MedicationDispense.SP_PATIENT) medicationDispense : ReferenceParam?,
         @OptionalParam(name = MedicationDispense.SP_WHENHANDEDOVER)  date : DateRangeParam?,
-        @OptionalParam(name = MedicationDispense.SP_PRESCRIPTION)  prescription: ReferenceParam,
+        @OptionalParam(name = MedicationDispense.SP_PRESCRIPTION)  prescription: ReferenceParam?,
         @OptionalParam(name = MedicationDispense.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = MedicationDispense.SP_RES_ID)  resid : StringParam?
     ): List<MedicationDispense> {
