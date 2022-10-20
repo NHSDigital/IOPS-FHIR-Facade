@@ -2,7 +2,6 @@ package uk.nhs.nhsdigital.qedm
 
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.rest.api.EncodingEnum
-import ca.uhn.fhir.rest.openapi.OpenApiInterceptor
 import ca.uhn.fhir.rest.server.RestfulServer
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.nhs.nhsdigital.qedm.configuration.FHIRServerProperties
@@ -22,9 +21,6 @@ class FHIRR4RestfulServer(
     public val patientProvider: PatientProvider,
     val medicationDispenseProvider: MedicationDispenseProvider,
     val medicationRequestProvider: MedicationRequestProvider,
-    val practitionerProvider: PractitionerProvider,
-    val practitionerRoleProvider: PractitionerRoleProvider,
-    val organizationProvider: OrganizationProvider,
 
     val serviceRequestProvider: ServiceRequestProvider,
     val taskProvider: TaskProvider,
@@ -33,7 +29,8 @@ class FHIRR4RestfulServer(
     val conditionProvider: ConditionProvider,
     val immunisationProvider: ImmunisationProvider,
     val observationProvider: ObservationProvider,
-    val procedureProvider: ProcedureProvider
+    val procedureProvider: ProcedureProvider,
+    val diagnosticReportProvider: DiagnosticReportProvider
 ) : RestfulServer(fhirContext) {
 
     override fun initialize() {
@@ -42,9 +39,6 @@ class FHIRR4RestfulServer(
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
         registerProvider(patientProvider)
-        registerProvider(organizationProvider)
-        registerProvider(practitionerProvider)
-        registerProvider(practitionerRoleProvider)
 
         registerProvider(encounterProvider)
 
@@ -59,6 +53,7 @@ class FHIRR4RestfulServer(
         registerProvider(immunisationProvider)
         registerProvider(observationProvider)
         registerProvider(procedureProvider)
+        registerProvider(diagnosticReportProvider)
 
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(
@@ -69,10 +64,6 @@ class FHIRR4RestfulServer(
         registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties, messageProperties))
 
 
-        // Now register the interceptor
-        // Now register the interceptor
-        val openApiInterceptor = OpenApiInterceptor()
-        registerInterceptor(openApiInterceptor)
 
         isDefaultPrettyPrint = true
         defaultResponseEncoding = EncodingEnum.JSON
