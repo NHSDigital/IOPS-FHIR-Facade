@@ -33,6 +33,7 @@ class ObservationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : 
         @OptionalParam(name = Observation.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Observation.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Observation.SP_CODE)  status :TokenParam?,
+        @OptionalParam(name = Observation.SP_CATEGORY)  category: TokenParam?,
         @OptionalParam(name = Observation.SP_RES_ID)  resid : StringParam?
     ): List<Observation> {
         val observations = mutableListOf<Observation>()
