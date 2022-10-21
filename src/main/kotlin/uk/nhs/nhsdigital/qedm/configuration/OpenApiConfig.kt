@@ -212,7 +212,7 @@ open class OpenApiConfig {
                     )
             )
 
-        oas.path("/FHIR/R4/AllegyIntolerance/{id}",allegyIntoleranceItem)
+        oas.path("/FHIR/R4/AllergyIntolerance/{id}",allegyIntoleranceItem)
 
         allegyIntoleranceItem = PathItem()
             .get(
@@ -254,7 +254,7 @@ open class OpenApiConfig {
                         .schema(StringSchema())
                     )
             )
-        oas.path("/FHIR/R4/AllegyIntolerance",allegyIntoleranceItem)
+        oas.path("/FHIR/R4/AllergyIntolerance",allegyIntoleranceItem)
 
 
         // Condition
