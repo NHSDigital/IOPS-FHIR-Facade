@@ -18,7 +18,6 @@ class FHIRR4RestfulServer(
     val fhirServerProperties: FHIRServerProperties,
     val messageProperties: MessageProperties,
     public val encounterProvider: EncounterProvider,
-    public val patientProvider: PatientProvider,
     val medicationDispenseProvider: MedicationDispenseProvider,
     val medicationRequestProvider: MedicationRequestProvider,
     val medicationStatementProvider: MedicationStatementProvider,
@@ -38,8 +37,6 @@ class FHIRR4RestfulServer(
         super.initialize()
 
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-
-        registerProvider(patientProvider)
 
         registerProvider(encounterProvider)
 
