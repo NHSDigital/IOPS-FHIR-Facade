@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 open class OpenApiConfig {
     var QEDM = "Query for Existing Patient Data"
-    var PDQM = "Patient Demographic Query"
+   // var PDQM = "Patient Demographic Query"
     val CLINICAL = "Clinical"
     val DIAGNOSTICS = "Diagnostics"
     val MEDICATION = "Medication"
@@ -38,10 +38,14 @@ open class OpenApiConfig {
                     .title(fhirServerProperties.server.name)
                     .version(fhirServerProperties.server.version)
                     .description(
-                        fhirServerProperties.server.name
-                                + "\n "
-                                + "\n [UK Core Implementation Guide (0.5.1)](https://simplifier.net/guide/ukcoreimplementationguide0.5.0-stu1/home?version=current)"
+                                "\n\n For Patient Document Queries and Document Notifications, see [Access to Health Documents](http://lb-fhir-mhd-1617422145.eu-west-2.elb.amazonaws.com/)."
+                                + "\n\n To add patient data, demographic queries and FHIR Subscription interactions, see [Events and Subscriptions](http://lb-hl7-tie-1794188809.eu-west-2.elb.amazonaws.com/)"
+                                + "\n\n For Care Diretory Queries, see [Care Services Directory](http://lb-fhir-mcsd-1736981144.eu-west-2.elb.amazonaws.com/). This OAS also includes **Care Teams Management**"
+
+                                + "\n\n ## FHIR Implementation Guides"
+                                + "\n\n [UK Core Implementation Guide (0.5.1)](https://simplifier.net/guide/ukcoreimplementationguide0.5.0-stu1/home?version=current)"
                                 + "\n\n [NHS Digital Implementation Guide (2.6.0)](https://simplifier.net/guide/nhsdigital?version=2.6.0)"
+
                     )
                     .termsOfService("http://swagger.io/terms/")
                     .license(License().name("Apache 2.0").url("http://springdoc.org"))
@@ -49,13 +53,7 @@ open class OpenApiConfig {
 
 
         // Tags
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(PDQM)
-                .description("[HL7 FHIR Administration Module](https://www.hl7.org/fhir/R4/administration-module.html) \n"
 
-                        + " [IHE Patient Demographics Query for mobile (PDQm)](https://profiles.ihe.net/ITI/PDQm/index.html)")
-        )
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
                 .name(QEDM + " - " + ADMINISTRATION)
@@ -87,110 +85,6 @@ open class OpenApiConfig {
         )
 
         // Administrative
-
-        // Patient
-
-        var patientItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(PDQM)
-                    .summary("Read Endpoint")
-                    .responses(getApiResponses())
-                    .addParametersItem(Parameter()
-                        .name("id")
-                        .`in`("path")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The ID of the resource")
-                        .schema(StringSchema())
-                    )
-            )
-
-        oas.path("/FHIR/R4/Patient/{id}",patientItem)
-
-        patientItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(PDQM)
-                    .summary("Patient Option Search Parameters")
-                    .responses(getApiResponses())
-                    .addParametersItem(Parameter()
-                        .name("_id")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The ID of the resource")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("active")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Whether the patient record is active")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("family")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("A portion of the family name of the patient")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("given")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("A portion of the given name of the patient")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("identifier")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("A patient identifier")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("telecom")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The value in any kind of telecom details of the patient")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("birthdate")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The patient's date of birth")
-                        .schema(StringSchema())
-                    )
-
-                    .addParametersItem(Parameter()
-                        .name("address-postalcode")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("A postalCode specified in an address")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("gender")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Gender of the patient")
-                        .schema(StringSchema())
-                    )
-
-            )
-        oas.path("/FHIR/R4/Patient",patientItem)
-
 
 
         // Clinical

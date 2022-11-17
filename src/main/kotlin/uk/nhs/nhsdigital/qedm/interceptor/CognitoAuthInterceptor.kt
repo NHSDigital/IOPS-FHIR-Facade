@@ -79,37 +79,53 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties, val ctx :
         } else {
             URL(url + path)
         }
-        val conn = myUrl.openConnection() as HttpURLConnection
-        getAccessToken()
-        val basicAuth = "Bearer "+authenticationResult!!.idToken
-        conn.setRequestProperty("Authorization", basicAuth)
-        conn.setRequestProperty("x-api-key",messageProperties.getAwsApiKey())
-        conn.requestMethod = "GET"
-        return try {
-            conn.connect()
-            val `is` = InputStreamReader(conn.inputStream)
+        var retry = 2
+        while (retry > 0) {
+            val conn = myUrl.openConnection() as HttpURLConnection
+
+            getAccessToken()
+            val basicAuth = "Bearer "+authenticationResult!!.idToken
+            conn.setRequestProperty("Authorization", basicAuth)
+            conn.setRequestProperty("x-api-key",messageProperties.getAwsApiKey())
+            conn.requestMethod = "GET"
+
             try {
-                val rd = BufferedReader(`is`)
-                responseObject.responseCode = 200
-                val resource = ctx.newJsonParser().parseResource(IOUtils.toString(rd)) as Resource
+                conn.connect()
+                val `is` = InputStreamReader(conn.inputStream)
+                try {
+                    val rd = BufferedReader(`is`)
+                    responseObject.responseCode = 200
+                    val resource = ctx.newJsonParser().parseResource(IOUtils.toString(rd)) as Resource
 
-                if (resource is Bundle) {
-                    val bundle = resource
-                    if (bundle.hasEntry()) {
-                        for (entryComponent in bundle.entry) {
+                    if (resource is Bundle) {
+                        val bundle = resource
+                        if (bundle.hasEntry()) {
+                            for (entryComponent in bundle.entry) {
 
+                            }
                         }
                     }
+                    return resource
+                } finally {
+                    `is`.close()
                 }
-                resource
-            } finally {
-                `is`.close()
+            } catch (ex: FileNotFoundException) {
+                null
+            } catch (ex: IOException) {
+                retry--
+                if (ex.message != null) {
+                    if (ex.message!!.contains("401") || ex.message!!.contains("403")) {
+
+                        this.authenticationResult = null
+                        if (retry < 1)
+                            throw UnprocessableEntityException(ex.message)
+                    }
+                } else {
+                    throw UnprocessableEntityException(ex.message)
+                }
             }
-        } catch (ex: FileNotFoundException) {
-            null
-        } catch (ex: IOException) {
-            throw UnprocessableEntityException(ex.message)
         }
+        throw UnprocessableEntityException("Number of retries exhausted")
     }
 
 }
