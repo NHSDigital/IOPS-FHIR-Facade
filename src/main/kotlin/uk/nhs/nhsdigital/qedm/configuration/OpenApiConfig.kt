@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 open class OpenApiConfig {
-    var QEDM = "Query for Existing Patient Data"
+    var QEDM = ""
    // var PDQM = "Patient Demographic Query"
     val CLINICAL = "Clinical"
     val DIAGNOSTICS = "Diagnostics"
@@ -39,11 +39,12 @@ open class OpenApiConfig {
                     .title(fhirServerProperties.server.name)
                     .version(fhirServerProperties.server.version)
                     .description(
+                        /*
                                 "\n\n For Patient Document Queries and Document Notifications, see [Access to Health Documents](http://lb-fhir-mhd-1617422145.eu-west-2.elb.amazonaws.com/)."
                                 + "\n\n To add patient data, demographic queries and FHIR Subscription interactions, see [Events and Subscriptions](http://lb-hl7-tie-1794188809.eu-west-2.elb.amazonaws.com/)"
                                 + "\n\n For Care Diretory Queries, see [Care Services Directory](http://lb-fhir-mcsd-1736981144.eu-west-2.elb.amazonaws.com/). This OAS also includes **Care Teams Management**"
-
-                                + "\n\n ## FHIR Implementation Guides"
+*/
+                                "## FHIR Implementation Guides"
                                 + "\n\n [UK Core Implementation Guide (0.5.1)](https://simplifier.net/guide/ukcoreimplementationguide0.5.0-stu1/home?version=current)"
                                 + "\n\n [NHS Digital Implementation Guide (2.6.0)](https://simplifier.net/guide/nhsdigital?version=2.6.0)"
 
@@ -59,21 +60,21 @@ open class OpenApiConfig {
 
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
-                .name(QEDM + " - " + ADMINISTRATION)
+                .name(QEDM + ADMINISTRATION)
                 .description("[HL7 FHIR Administration Module](https://www.hl7.org/fhir/R4/administration-module.html) \n"
 
                         + " [IHE Mobile Query Existing Data PCC-44](https://www.ihe.net/uploadedFiles/Documents/PCC/IHE_PCC_Suppl_QEDm.pdf)")
         )
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
-                .name(QEDM + " - " + CLINICAL)
+                .name(QEDM +  CLINICAL)
                 .description("[HL7 FHIR Clinical Module](https://www.hl7.org/fhir/R4/clinicalsummary-module.html) \n"
 
                 + " [IHE Mobile Query Existing Data PCC-44](https://www.ihe.net/uploadedFiles/Documents/PCC/IHE_PCC_Suppl_QEDm.pdf)")
         )
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
-                .name(QEDM + " - " + DIAGNOSTICS)
+                .name(QEDM +  DIAGNOSTICS)
                 .description(
                          "[HL7 FHIR Diagnostics Module](https://www.hl7.org/fhir/R4/clinicalsummary-module.html) \n"
 
@@ -81,7 +82,7 @@ open class OpenApiConfig {
         )
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
-                .name(QEDM + " - " + MEDICATION)
+                .name(QEDM +  MEDICATION)
                 .description(
                         "[HL7 FHIR Medications Module](https://www.hl7.org/fhir/R4/medications-module.html) \n"
                         + " [IHE Mobile Query Existing Data PCC-44](https://profiles.ihe.net/ITI/mCSD/ITI-90.html)")
@@ -96,7 +97,7 @@ open class OpenApiConfig {
         var allegyIntoleranceItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + CLINICAL)
+                    .addTagsItem(QEDM  + CLINICAL)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -114,7 +115,7 @@ open class OpenApiConfig {
         allegyIntoleranceItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + CLINICAL)
+                    .addTagsItem(QEDM + CLINICAL)
                     .summary("Allergies and Intolerances Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -159,7 +160,7 @@ open class OpenApiConfig {
         var conditionItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + CLINICAL)
+                    .addTagsItem(QEDM  + CLINICAL)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -176,7 +177,7 @@ open class OpenApiConfig {
         conditionItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + CLINICAL)
+                    .addTagsItem(QEDM  + CLINICAL)
                     .summary("Allergies and Intolerances Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -219,7 +220,7 @@ open class OpenApiConfig {
         var diagnosticReportItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + DIAGNOSTICS)
+                    .addTagsItem(QEDM + DIAGNOSTICS)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -236,7 +237,7 @@ open class OpenApiConfig {
         diagnosticReportItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + DIAGNOSTICS)
+                    .addTagsItem(QEDM  + DIAGNOSTICS)
                     .summary("Diagnostic Reports Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -279,7 +280,7 @@ open class OpenApiConfig {
         var observationItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + DIAGNOSTICS)
+                    .addTagsItem(QEDM  + DIAGNOSTICS)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -296,7 +297,7 @@ open class OpenApiConfig {
         observationItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + DIAGNOSTICS)
+                    .addTagsItem(QEDM  + DIAGNOSTICS)
                     .summary("Observation Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -338,7 +339,7 @@ open class OpenApiConfig {
         var procedureItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + CLINICAL)
+                    .addTagsItem(QEDM  + CLINICAL)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -355,7 +356,7 @@ open class OpenApiConfig {
         procedureItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + CLINICAL)
+                    .addTagsItem(QEDM  + CLINICAL)
                     .summary("Procedure Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -381,7 +382,7 @@ open class OpenApiConfig {
         var encounterItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + ADMINISTRATION)
+                    .addTagsItem(QEDM  + ADMINISTRATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -398,7 +399,7 @@ open class OpenApiConfig {
         encounterItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + ADMINISTRATION)
+                    .addTagsItem(QEDM  + ADMINISTRATION)
                     .summary("Encounter Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -425,7 +426,7 @@ open class OpenApiConfig {
         var medicationRequestItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + MEDICATION)
+                    .addTagsItem(QEDM  + MEDICATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -442,7 +443,7 @@ open class OpenApiConfig {
         medicationRequestItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + MEDICATION)
+                    .addTagsItem(QEDM  + MEDICATION)
                     .summary("MedicationRequest Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -468,7 +469,7 @@ open class OpenApiConfig {
         var medicationStatementItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + MEDICATION)
+                    .addTagsItem(QEDM  + MEDICATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -485,7 +486,7 @@ open class OpenApiConfig {
         medicationStatementItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + MEDICATION)
+                    .addTagsItem(QEDM + MEDICATION)
                     .summary("MedicationStatement Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -503,7 +504,7 @@ open class OpenApiConfig {
         var immunizationItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + MEDICATION)
+                    .addTagsItem(QEDM  + MEDICATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -520,7 +521,7 @@ open class OpenApiConfig {
         immunizationItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(QEDM + " - " + MEDICATION)
+                    .addTagsItem(QEDM  + MEDICATION)
                     .summary("Immunization Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
