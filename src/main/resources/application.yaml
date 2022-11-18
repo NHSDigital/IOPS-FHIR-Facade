@@ -14,9 +14,9 @@ management:
 
 fhir:
   server:
-    name: Query for Existing Patient Data
-    baseUrl: http://lb-fhir-facade-926707562.eu-west-2.elb.amazonaws.com/FHIR/R4
-    version: 1.0.9
+    name: Clinical Data Sharing
+    baseUrl: https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/clinicaldatasharing
+    version: 1.0.10
 
 ###Remote terminology validation:
 

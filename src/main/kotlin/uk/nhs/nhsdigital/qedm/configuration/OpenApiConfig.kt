@@ -14,6 +14,7 @@ import io.swagger.v3.oas.models.media.StringSchema
 import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
+import io.swagger.v3.oas.models.servers.Server
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -50,7 +51,9 @@ open class OpenApiConfig {
                     .termsOfService("http://swagger.io/terms/")
                     .license(License().name("Apache 2.0").url("http://springdoc.org"))
             )
-
+        oas.addServersItem(
+            Server().description(fhirServerProperties.server.name).url(fhirServerProperties.server.baseUrl)
+        )
 
         // Tags
 
