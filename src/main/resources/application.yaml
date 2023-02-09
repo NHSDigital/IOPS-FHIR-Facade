@@ -15,8 +15,8 @@ management:
 fhir:
   server:
     name: Clinical Data Sharing
-    baseUrl: http://localhost:9003
-    version: 1.0.12
+    baseUrl: https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/clinicaldatasharing
+    version: 1.0.11
 
 ###Remote terminology validation:
 
