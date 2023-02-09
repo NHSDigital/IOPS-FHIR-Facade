@@ -64,6 +64,7 @@ open class OpenApiConfig {
             io.swagger.v3.oas.models.tags.Tag()
                 .name(PDQ)
                 .description("[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
+                        + " [HL7 UK - UKCore FHIR Access](https://build.fhir.org/ig/HL7-UK/UK-Core-Access/patient_search.html)"
                         + " [IHE Patient Demographics Query for mobile (PDQm)](https://profiles.ihe.net/ITI/PDQm/index.html)")
         )
         oas.addTagsItem(
@@ -95,6 +96,14 @@ open class OpenApiConfig {
                         "[HL7 FHIR Medications Module](https://www.hl7.org/fhir/R4/medications-module.html) \n"
                         + " [IHE Mobile Query Existing Data PCC-44](https://profiles.ihe.net/ITI/mCSD/ITI-90.html)")
         )
+        oas.addTagsItem(
+            io.swagger.v3.oas.models.tags.Tag()
+                .name(MHD)
+                .description(
+                    "[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
+                            + " [IHE MHD ITI-67 and ITI-68](https://profiles.ihe.net/ITI/MHD/ITI-67.html)")
+        )
+
 
         // Administrative
         var patientItem = PathItem()
