@@ -32,7 +32,7 @@ class DocumentReferenceProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
                 if (content.hasAttachment() && content.attachment.hasUrl()) {
                     if (content.attachment.url.startsWith("http://localhost:")) {
                         var urls = content.attachment.url.split("Binary")
-                        if (urls.size>1) content.attachment.url = fhirServerProperties.server.baseUrl + "/FHIR/R4"+ urls[1]
+                        if (urls.size>1) content.attachment.url = fhirServerProperties.server.baseUrl + "/FHIR/R4/Binary"+ urls[1]
                     }
                 }
             }

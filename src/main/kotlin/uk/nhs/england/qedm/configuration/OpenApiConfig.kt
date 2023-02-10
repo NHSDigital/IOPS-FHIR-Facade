@@ -31,6 +31,7 @@ open class OpenApiConfig {
     var MHD = "Documents"
 
     var PDQ = "Patient Demographic Queries"
+    var APIM = "Security and API Management"
     @Bean
     open fun customOpenAPI(
         fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties
@@ -719,6 +720,17 @@ open class OpenApiConfig {
                     )
             )
         oas.path("/FHIR/R4/Binary/{id}",binaryItem)
+
+        val metadataItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(APIM)
+                    .summary("Get the capabilities and configurations of this FHIR Server.")
+                    .description("")
+                    .responses(getApiResponses())
+
+            )
+        oas.path("/FHIR/R4/metadata",metadataItem)
 
         return oas
     }
