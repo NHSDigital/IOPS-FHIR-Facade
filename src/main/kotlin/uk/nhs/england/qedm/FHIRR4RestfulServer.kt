@@ -36,7 +36,8 @@ class FHIRR4RestfulServer(
     val patientProvider: PatientProvider,
     val documentReferenceProvider: DocumentReferenceProvider,
     val binaryProvider: BinaryProvider,
-    val specimenProvider: SpecimenProvider
+    val specimenProvider: SpecimenProvider,
+    val consentProvider: ConsentProvider
 
 ) : RestfulServer(fhirContext) {
 
@@ -64,6 +65,7 @@ class FHIRR4RestfulServer(
         registerProvider(binaryProvider)
         registerProvider(documentReferenceProvider)
         registerProvider(specimenProvider)
+        registerProvider(consentProvider)
 
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(
