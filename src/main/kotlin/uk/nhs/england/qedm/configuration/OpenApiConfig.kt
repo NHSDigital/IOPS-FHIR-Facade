@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.media.MediaType
 
 import io.swagger.v3.oas.models.media.StringSchema
 import io.swagger.v3.oas.models.parameters.Parameter
+import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
 import io.swagger.v3.oas.models.servers.Server
@@ -29,6 +30,7 @@ open class OpenApiConfig {
     val MEDICATION = "Medication"
     val ADMINISTRATION = "Administration"
     var MHD = "Documents"
+    var FORMS = "Structured Data Capture"
 
     var PDQ = "Patient Demographic Queries"
     var APIM = "Security and API Management"
@@ -103,6 +105,12 @@ open class OpenApiConfig {
                 .description(
                     "[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
                             + " [IHE MHD ITI-67 and ITI-68](https://profiles.ihe.net/ITI/MHD/ITI-67.html)")
+        )
+        oas.addTagsItem(
+            io.swagger.v3.oas.models.tags.Tag()
+                .name(FORMS)
+                .description("[HL7 FHIR Structured Data Capture](http://hl7.org/fhir/uv/sdc/) \n"
+                )
         )
 
 
@@ -720,6 +728,36 @@ open class OpenApiConfig {
                     )
             )
         oas.path("/FHIR/R4/Binary/{id}",binaryItem)
+
+        // QuestionnaireResponse
+
+        val questionnaireResponseItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(FORMS)
+                    .summary("Query Form Results")
+                    .description("This allows querying results of a QuestionnaireResponse")
+                    .addParametersItem(Parameter()
+                        .name("patient")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The patient that is the subject of the questionnaire response")
+                        .schema(StringSchema())
+                    )
+                        .addParametersItem(Parameter()
+                            .name("questionnaire")
+                            .`in`("query")
+                            .required(false)
+                            .style(Parameter.StyleEnum.SIMPLE)
+                            .description("The questionnaire the answers are provided for")
+                            .schema(StringSchema())
+                            .example("https://example.fhir.nhs.uk/Questionnaire/Simple-Blood-Pressure")
+                        )
+                    .responses(getApiResponses())
+            )
+
+        oas.path("/FHIR/R4/QuestionnaireResponse",questionnaireResponseItem)
 
         val metadataItem = PathItem()
             .get(

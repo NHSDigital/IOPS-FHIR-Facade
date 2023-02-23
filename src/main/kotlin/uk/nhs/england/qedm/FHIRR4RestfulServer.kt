@@ -3,11 +3,7 @@ package uk.nhs.england.qedm
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.rest.api.EncodingEnum
 import ca.uhn.fhir.rest.server.RestfulServer
-import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.web.cors.CorsConfiguration
-import uk.nhs.england.qedm.configuration.FHIRServerProperties
-import uk.nhs.england.qedm.configuration.MessageProperties
 import uk.nhs.england.qedm.interceptor.AWSAuditEventLoggingInterceptor
 import uk.nhs.england.qedm.interceptor.CapabilityStatementInterceptor
 import uk.nhs.england.qedm.provider.*
@@ -37,7 +33,8 @@ class FHIRR4RestfulServer(
     val documentReferenceProvider: DocumentReferenceProvider,
     val binaryProvider: BinaryProvider,
     val specimenProvider: SpecimenProvider,
-    val consentProvider: ConsentProvider
+    val consentProvider: ConsentProvider,
+    val questionnaireResponseProvider: QuestionnaireResponseProvider
 
 ) : RestfulServer(fhirContext) {
 
@@ -66,6 +63,8 @@ class FHIRR4RestfulServer(
         registerProvider(documentReferenceProvider)
         registerProvider(specimenProvider)
         registerProvider(consentProvider)
+
+        registerProvider(questionnaireResponseProvider)
 
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(
