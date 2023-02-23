@@ -21,11 +21,11 @@ class QuestionnaireResponseProvider(
 
     @Search
     fun search(httpRequest : HttpServletRequest,
-               @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) patient: ReferenceParam?,
-               @OptionalParam(name = QuestionnaireResponse.SP_QUESTIONNAIRE) questionnaire : ReferenceParam?,
+               @RequiredParam(name = QuestionnaireResponse.SP_PATIENT) patient: ReferenceParam?,
+             //.  @OptionalParam(name = QuestionnaireResponse.SP_QUESTIONNAIRE) questionnaire : ReferenceParam?,
                @OptionalParam(name= QuestionnaireResponse.SP_STATUS) status : TokenParam?
     ): List<QuestionnaireResponse>? {
-        return awsQuestionnaireResponse.seach(patient,questionnaire,status)
+        return awsQuestionnaireResponse.seach(patient,null,status)
     }
 
 }

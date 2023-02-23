@@ -740,12 +740,12 @@ open class OpenApiConfig {
                     .addParametersItem(Parameter()
                         .name("patient")
                         .`in`("query")
-                        .required(false)
+                        .required(true)
                         .style(Parameter.StyleEnum.SIMPLE)
                         .description("The patient that is the subject of the questionnaire response")
                         .schema(StringSchema())
                     )
-                        .addParametersItem(Parameter()
+                    /*    .addParametersItem(Parameter()
                             .name("questionnaire")
                             .`in`("query")
                             .required(false)
@@ -753,7 +753,7 @@ open class OpenApiConfig {
                             .description("The questionnaire the answers are provided for")
                             .schema(StringSchema())
                             .example("https://example.fhir.nhs.uk/Questionnaire/Simple-Blood-Pressure")
-                        )
+                        )*/
                     .responses(getApiResponses())
             )
 
