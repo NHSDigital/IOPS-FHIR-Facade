@@ -731,7 +731,7 @@ open class OpenApiConfig {
 
         // QuestionnaireResponse
 
-        val questionnaireResponseItem = PathItem()
+        var questionnaireResponseItem = PathItem()
             .get(
                 Operation()
                     .addTagsItem(FORMS)
@@ -743,7 +743,7 @@ open class OpenApiConfig {
                         .required(true)
                         .style(Parameter.StyleEnum.SIMPLE)
                         .description("The patient that is the subject of the questionnaire response")
-                        .schema(StringSchema())
+                        .schema(StringSchema().example("073eef49-81ee-4c2e-893b-bc2e4efd2630"))
                     )
                     /*    .addParametersItem(Parameter()
                             .name("questionnaire")
@@ -758,6 +758,24 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/QuestionnaireResponse",questionnaireResponseItem)
+
+        questionnaireResponseItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(FORMS)
+                    .summary("Read Endpoint")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("id")
+                        .`in`("path")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The ID of the resource")
+                        .schema(StringSchema())
+                    )
+            )
+
+        oas.path("/FHIR/R4/QuestionnaireResponse/{id}",questionnaireResponseItem)
 
         val metadataItem = PathItem()
             .get(

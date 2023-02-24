@@ -19,6 +19,11 @@ class QuestionnaireResponseProvider(
         return QuestionnaireResponse::class.java
     }
 
+    @Read
+    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): QuestionnaireResponse? {
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        return if (resource is QuestionnaireResponse) resource else null
+    }
     @Search
     fun search(httpRequest : HttpServletRequest,
                @RequiredParam(name = QuestionnaireResponse.SP_PATIENT) patient: ReferenceParam?,
