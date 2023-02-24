@@ -34,6 +34,7 @@ open class OpenApiConfig {
 
     var PDQ = "Patient Demographic Queries"
     var APIM = "Security and API Management"
+    var WORKFLOW = "FHIR Workflow"
     @Bean
     open fun customOpenAPI(
         fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties
@@ -111,6 +112,13 @@ open class OpenApiConfig {
                 .name(FORMS)
                 .description("[HL7 FHIR Structured Data Capture](http://hl7.org/fhir/uv/sdc/) \n"
                 )
+        )
+        oas.addTagsItem(
+            io.swagger.v3.oas.models.tags.Tag()
+                .name(WORKFLOW)
+                .description(
+                    "[HL7 FHIR Workflow](http://hl7.org/fhir/R4/workflow-module.html) \n"
+                            + " [HL7 FHIR Structure Data Capture](http://hl7.org/fhir/uv/sdc/workflow.html)")
         )
 
 
@@ -776,6 +784,67 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/QuestionnaireResponse/{id}",questionnaireResponseItem)
+
+
+        var taskItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(WORKFLOW)
+                    .summary("Query Tasks")
+                    .addParametersItem(Parameter()
+                        .name("patient")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Search by patient")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("owner")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Search by task owner")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("requester")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Search by task requester")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("status")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Search by task status")
+                        .schema(StringSchema())
+                    )
+                    .responses(getApiResponses())
+            )
+
+        oas.path("/FHIR/R4/Task",taskItem)
+
+        taskItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(WORKFLOW)
+                    .summary("Read Endpoint")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("id")
+                        .`in`("path")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The ID of the resource")
+                        .schema(StringSchema())
+                    )
+            )
+
+        oas.path("/FHIR/R4/Task/{id}",taskItem)
 
         val metadataItem = PathItem()
             .get(
