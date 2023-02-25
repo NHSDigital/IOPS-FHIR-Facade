@@ -767,7 +767,7 @@ open class OpenApiConfig {
 
         oas.path("/FHIR/R4/QuestionnaireResponse",questionnaireResponseItem)
 
-       /* questionnaireResponseItem = PathItem()
+        questionnaireResponseItem = PathItem()
             .get(
                 Operation()
                     .addTagsItem(FORMS)
@@ -784,7 +784,6 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/QuestionnaireResponse/{id}",questionnaireResponseItem)
-*/
 
         var taskItem = PathItem()
             .get(
