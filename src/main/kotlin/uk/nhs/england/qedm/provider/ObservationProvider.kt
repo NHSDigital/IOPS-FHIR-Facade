@@ -11,11 +11,12 @@ import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.configuration.FHIRServerProperties
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class ObservationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
+class ObservationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, var fhirServerProperties: FHIRServerProperties) : IResourceProvider {
     override fun getResourceType(): Class<Observation> {
         return Observation::class.java
     }
@@ -34,11 +35,16 @@ class ObservationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : 
         @OptionalParam(name = Observation.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Observation.SP_CODE)  status :TokenParam?,
         @OptionalParam(name = Observation.SP_CATEGORY)  category: TokenParam?,
-        @OptionalParam(name = Observation.SP_RES_ID)  resid : StringParam?
+        @OptionalParam(name = Observation.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
     ): Resource? {
         val observations = mutableListOf<Observation>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
         if (resource != null && resource is Bundle) {
+            for (entry in resource.entry) {
+                entry.fullUrl = fhirServerProperties.server.baseUrl + "/FHIR/R4/"+entry.resource.javaClass.simpleName + "/"+entry.resource.idElement.idPart
+            }
             return resource
         }
 
