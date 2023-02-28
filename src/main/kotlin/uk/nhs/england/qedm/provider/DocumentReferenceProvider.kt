@@ -14,15 +14,12 @@ import javax.servlet.http.HttpServletRequest
 @Component
 class DocumentReferenceProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor,
                                 val  fhirServerProperties: FHIRServerProperties
-) : IResourceProvider {
-    override fun getResourceType(): Class<DocumentReference> {
-        return DocumentReference::class.java
-    }
+)  {
 
 
-    @Read
+    @Read(type=DocumentReference::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): DocumentReference? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"DocumentReference")
         return if (resource is DocumentReference) fixUrl(resource) else null
     }
 
@@ -39,23 +36,23 @@ class DocumentReferenceProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         }
         return documentReference
     }
-    @Search
+    @Search(type=DocumentReference::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = DocumentReference.SP_PATIENT) patient : TokenParam?,
         @OptionalParam(name = DocumentReference.SP_DATE) date : DateRangeParam?,
         @OptionalParam(name = DocumentReference.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = DocumentReference.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
 
-    ): List<DocumentReference> {
+    ): Bundle? {
         val healthcareServices = mutableListOf<DocumentReference>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"DocumentReference")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is DocumentReference) healthcareServices.add(fixUrl(entry.resource as DocumentReference))
-            }
+            return resource
         }
 
-        return healthcareServices
+        return null
     }
 }

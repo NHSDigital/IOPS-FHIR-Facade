@@ -15,34 +15,32 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class DiagnosticReportProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<DiagnosticReport> {
-        return DiagnosticReport::class.java
-    }
+class DiagnosticReportProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type=DiagnosticReport::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): DiagnosticReport? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"DiagnosticReport")
         return if (resource is DiagnosticReport) resource else null
     }
 
-    @Search
+    @Search(type=DiagnosticReport::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = DiagnosticReport.SP_PATIENT) patient : ReferenceParam?,
         @OptionalParam(name = DiagnosticReport.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = DiagnosticReport.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = DiagnosticReport.SP_CODE)  status :TokenParam?,
-        @OptionalParam(name = DiagnosticReport.SP_RES_ID)  resid : StringParam?
-    ): List<DiagnosticReport> {
+        @OptionalParam(name = DiagnosticReport.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val diagnosticReports = mutableListOf<DiagnosticReport>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"DiagnosticReport")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is DiagnosticReport) diagnosticReports.add(entry.resource as DiagnosticReport)
-            }
+            return resource
         }
 
-        return diagnosticReports
+        return null
     }
 }

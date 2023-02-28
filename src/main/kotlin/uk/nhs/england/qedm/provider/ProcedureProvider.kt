@@ -15,34 +15,32 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class ProcedureProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Procedure> {
-        return Procedure::class.java
-    }
+class ProcedureProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
 
-    @Read
+
+    @Read(type=Procedure::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Procedure? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,null)
         return if (resource is Procedure) resource else null
     }
 
-    @Search
+    @Search(type=Procedure::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Procedure.SP_PATIENT) patient : ReferenceParam?,
         @OptionalParam(name = Procedure.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Procedure.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Procedure.SP_STATUS)  status :TokenParam?,
-        @OptionalParam(name = Procedure.SP_RES_ID)  resid : StringParam?
-    ): List<Procedure> {
+        @OptionalParam(name = Procedure.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val procedures = mutableListOf<Procedure>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Procedure")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Procedure) procedures.add(entry.resource as Procedure)
-            }
+            return resource
         }
 
-        return procedures
+        return null
     }
 }

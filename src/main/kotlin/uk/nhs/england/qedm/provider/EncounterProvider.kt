@@ -30,7 +30,9 @@ class EncounterProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
         @OptionalParam(name = Encounter.SP_PATIENT) encounter : ReferenceParam?,
         @OptionalParam(name = Encounter.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Encounter.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Encounter.SP_RES_ID)  resid : StringParam?
+        @OptionalParam(name = Encounter.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
         val encounters = mutableListOf<Encounter>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Encounter")

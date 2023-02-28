@@ -15,33 +15,31 @@ import javax.servlet.http.HttpServletRequest
 
 
 @Component
-class MedicationStatementProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<MedicationStatement> {
-        return MedicationStatement::class.java
-    }
+class MedicationStatementProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type=MedicationStatement::class)
     fun read(httpStatement : HttpServletRequest, @IdParam internalId: IdType): MedicationStatement? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpStatement.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpStatement.pathInfo, null,null)
         return if (resource is MedicationStatement) resource else null
     }
 
-    @Search
+    @Search(type=MedicationStatement::class)
     fun search(
         httpStatement : HttpServletRequest,
         @OptionalParam(name = MedicationStatement.SP_PATIENT) patient : ReferenceParam?,
         @OptionalParam(name = MedicationStatement.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = MedicationStatement.SP_STATUS)  status :TokenParam?,
-        @OptionalParam(name = MedicationStatement.SP_RES_ID)  resid : StringParam?
-    ): List<MedicationStatement> {
-        val medicationStatements = mutableListOf<MedicationStatement>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpStatement.pathInfo, httpStatement.queryString)
+        @OptionalParam(name = MedicationStatement.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
+
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpStatement.pathInfo, httpStatement.queryString,"MedicationStatement")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is MedicationStatement) medicationStatements.add(entry.resource as MedicationStatement)
-            }
+            return resource
         }
 
-        return medicationStatements
+        return null
     }
 }

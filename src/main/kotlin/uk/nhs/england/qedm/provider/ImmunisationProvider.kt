@@ -16,13 +16,11 @@ import javax.servlet.http.HttpServletRequest
 
 @Component
 class ImmunisationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
-    override fun getResourceType(): Class<Immunization> {
-        return Immunization::class.java
-    }
+
 
     @Read(type = Immunization::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Immunization? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"Immunization")
         return if (resource is Immunization) resource else null
     }
 
@@ -34,15 +32,13 @@ class ImmunisationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  
         @OptionalParam(name = Immunization.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Immunization.SP_STATUS)  status :TokenParam?,
         @OptionalParam(name = Immunization.SP_RES_ID)  resid : StringParam?
-    ): List<Immunization> {
-        val immunisations = mutableListOf<Immunization>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+    ): Bundle? {
+
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Immunization")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Immunization) immunisations.add(entry.resource as Immunization)
-            }
+            return resource
         }
 
-        return immunisations
+        return null
     }
 }

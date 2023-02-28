@@ -15,34 +15,32 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class ServiceRequestProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<ServiceRequest> {
-        return ServiceRequest::class.java
-    }
+class ServiceRequestProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type=ServiceRequest::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): ServiceRequest? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"ServiceRequest")
         return if (resource is ServiceRequest) resource else null
     }
 
-    @Search
+    @Search(type=ServiceRequest::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = ServiceRequest.SP_PATIENT) serviceRequest : ReferenceParam?,
         @OptionalParam(name = ServiceRequest.SP_AUTHORED)  date : DateRangeParam?,
         @OptionalParam(name = ServiceRequest.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = ServiceRequest.SP_STATUS)  status :TokenParam?,
-        @OptionalParam(name = ServiceRequest.SP_RES_ID)  resid : StringParam?
-    ): List<ServiceRequest> {
+        @OptionalParam(name = ServiceRequest.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val serviceRequests = mutableListOf<ServiceRequest>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"ServiceRequest")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is ServiceRequest) serviceRequests.add(entry.resource as ServiceRequest)
-            }
+            return resource
         }
 
-        return serviceRequests
+        return null
     }
 }

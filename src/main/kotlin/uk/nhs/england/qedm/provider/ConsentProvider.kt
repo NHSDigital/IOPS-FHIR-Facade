@@ -15,33 +15,31 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class ConsentProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Consent> {
-        return Consent::class.java
-    }
+class ConsentProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type=Consent::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Consent? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"Consent")
         return if (resource is Consent) resource else null
     }
 
-    @Search
+    @Search(type=Consent::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Consent.SP_PATIENT) patient : ReferenceParam?,
       
         @OptionalParam(name = Consent.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Consent.SP_RES_ID)  resid : StringParam?
-    ): List<Consent> {
+        @OptionalParam(name = Consent.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val consents = mutableListOf<Consent>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Consent")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Consent) consents.add(entry.resource as Consent)
-            }
+            return resource
         }
 
-        return consents
+        return null
     }
 }

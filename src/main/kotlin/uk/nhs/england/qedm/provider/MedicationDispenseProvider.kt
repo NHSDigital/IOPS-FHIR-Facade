@@ -17,34 +17,32 @@ import javax.servlet.http.HttpServletRequest
 
 @Component
 @Tag(name="Medications")
-class MedicationDispenseProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<MedicationDispense> {
-        return MedicationDispense::class.java
-    }
+class MedicationDispenseProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type=MedicationDispense::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): MedicationDispense? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"MedicationDispense")
         return if (resource is MedicationDispense) resource else null
     }
 
-    @Search
+    @Search(type=MedicationDispense::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = MedicationDispense.SP_PATIENT) medicationDispense : ReferenceParam?,
         @OptionalParam(name = MedicationDispense.SP_WHENHANDEDOVER)  date : DateRangeParam?,
         @OptionalParam(name = MedicationDispense.SP_PRESCRIPTION)  prescription: ReferenceParam?,
         @OptionalParam(name = MedicationDispense.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = MedicationDispense.SP_RES_ID)  resid : StringParam?
-    ): List<MedicationDispense> {
+        @OptionalParam(name = MedicationDispense.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val medicationDispenses = mutableListOf<MedicationDispense>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"MedicationDispense")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is MedicationDispense) medicationDispenses.add(entry.resource as MedicationDispense)
-            }
+            return resource
         }
 
-        return medicationDispenses
+        return null
     }
 }

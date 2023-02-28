@@ -15,18 +15,15 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Task> {
-        return Task::class.java
-    }
+class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
 
-    @Read
+    @Read(type=Task::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Task? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"Task")
         return if (resource is Task) resource else null
     }
 
-    @Search
+    @Search(type=Task::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Task.SP_PATIENT) task : ReferenceParam?,
@@ -34,16 +31,15 @@ class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResour
         @OptionalParam(name = Task.SP_CODE)  code :TokenParam?,
         @OptionalParam(name = Task.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Task.SP_STATUS)  status :TokenParam?,
-        @OptionalParam(name = Task.SP_RES_ID)  resid : StringParam?
-    ): List<Task> {
+        @OptionalParam(name = Task.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle?{
         val tasks = mutableListOf<Task>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Task")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Task) tasks.add(entry.resource as Task)
-            }
+            return resource
         }
-
-        return tasks
+        return null
     }
 }

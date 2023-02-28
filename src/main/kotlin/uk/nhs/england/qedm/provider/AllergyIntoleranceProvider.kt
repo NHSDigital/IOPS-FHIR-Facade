@@ -15,34 +15,31 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class AllergyIntoleranceProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<AllergyIntolerance> {
-        return AllergyIntolerance::class.java
-    }
+class AllergyIntoleranceProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type =AllergyIntolerance::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): AllergyIntolerance? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,null)
         return if (resource is AllergyIntolerance) resource else null
     }
 
-    @Search
+    @Search(type =AllergyIntolerance::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = AllergyIntolerance.SP_PATIENT) patient : ReferenceParam?,
         @OptionalParam(name = AllergyIntolerance.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS)  status :TokenParam?,
-        @OptionalParam(name = AllergyIntolerance.SP_RES_ID)  resid : StringParam?
-    ): List<AllergyIntolerance> {
+        @OptionalParam(name = AllergyIntolerance.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val allergyIntolerances = mutableListOf<AllergyIntolerance>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"AllergyIntolerance")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is AllergyIntolerance) allergyIntolerances.add(entry.resource as AllergyIntolerance)
-            }
+            resource
         }
-
-        return allergyIntolerances
+        return null
     }
 }

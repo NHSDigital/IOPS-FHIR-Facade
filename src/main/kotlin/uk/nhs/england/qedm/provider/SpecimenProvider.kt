@@ -15,14 +15,12 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class SpecimenProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Specimen> {
-        return Specimen::class.java
-    }
+class SpecimenProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type=Specimen::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Specimen? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null,"Specimen")
         return if (resource is Specimen) resource else null
     }
 
@@ -32,16 +30,16 @@ class SpecimenProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IRe
         @OptionalParam(name = Specimen.SP_PATIENT) patient : ReferenceParam?,
       
         @OptionalParam(name = Specimen.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Specimen.SP_RES_ID)  resid : StringParam?
-    ): List<Specimen> {
+        @OptionalParam(name = Specimen.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_count")  count : StringParam?
+    ): Bundle? {
         val specimens = mutableListOf<Specimen>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Specimen")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Specimen) specimens.add(entry.resource as Specimen)
-            }
+            return resource
         }
 
-        return specimens
+        return null
     }
 }
