@@ -35,15 +35,13 @@ class ObservationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : 
         @OptionalParam(name = Observation.SP_CODE)  status :TokenParam?,
         @OptionalParam(name = Observation.SP_CATEGORY)  category: TokenParam?,
         @OptionalParam(name = Observation.SP_RES_ID)  resid : StringParam?
-    ): List<Observation> {
+    ): Resource? {
         val observations = mutableListOf<Observation>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Observation) observations.add(entry.resource as Observation)
-            }
+            return resource
         }
 
-        return observations
+        return null
     }
 }
