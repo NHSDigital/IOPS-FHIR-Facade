@@ -15,18 +15,18 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class ImmunisationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
+class ImmunisationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
     override fun getResourceType(): Class<Immunization> {
         return Immunization::class.java
     }
 
-    @Read
+    @Read(type = Immunization::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Immunization? {
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
         return if (resource is Immunization) resource else null
     }
 
-    @Search
+    @Search(type =  Immunization::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Immunization.SP_PATIENT) patient : ReferenceParam?,

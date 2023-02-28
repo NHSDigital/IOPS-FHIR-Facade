@@ -13,18 +13,14 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class PatientProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Patient> {
-        return Patient::class.java
-    }
+class PatientSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
 
-    @Read
+    @Read(type=Patient::class)
     fun read( httpRequest : HttpServletRequest,@IdParam internalId: IdType): Patient? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo,  null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo,  null, null)
         return if (resource is Patient) resource else null
     }
-
-    @Search
+    @Search(type = Patient::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Patient.SP_ADDRESS_POSTALCODE) addressPostcode : StringParam?,
@@ -36,16 +32,13 @@ class PatientProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IRes
         @OptionalParam(name = Patient.SP_IDENTIFIER) identifier : TokenParam?,
         @OptionalParam(name= Patient.SP_NAME) name : StringParam?,
         @OptionalParam(name= Patient.SP_TELECOM) phone : StringParam?
-    ): List<Patient> {
+    ): Bundle? {
         val patients = mutableListOf<Patient>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Patient")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Patient) patients.add(entry.resource as Patient)
-            }
+            return resource
         }
-
-        return patients
+        return null
     }
 
 }

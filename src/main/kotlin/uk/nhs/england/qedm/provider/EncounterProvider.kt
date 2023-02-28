@@ -15,33 +15,29 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class EncounterProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) : IResourceProvider {
-    override fun getResourceType(): Class<Encounter> {
-        return Encounter::class.java
-    }
+class EncounterProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
 
-    @Read
+
+    @Read(type = Encounter::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Encounter? {
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null, null)
         return if (resource is Encounter) resource else null
     }
 
-    @Search
+    @Search(type = Encounter::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Encounter.SP_PATIENT) encounter : ReferenceParam?,
         @OptionalParam(name = Encounter.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Encounter.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Encounter.SP_RES_ID)  resid : StringParam?
-    ): List<Encounter> {
+    ): Bundle? {
         val encounters = mutableListOf<Encounter>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Encounter")
         if (resource != null && resource is Bundle) {
-            for (entry in resource.entry) {
-                if (entry.hasResource() && entry.resource is Encounter) encounters.add(entry.resource as Encounter)
-            }
+            return resource
         }
 
-        return encounters
+        return null
     }
 }

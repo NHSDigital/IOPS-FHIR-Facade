@@ -10,6 +10,7 @@ import uk.nhs.england.qedm.provider.*
 import java.util.*
 import javax.servlet.annotation.WebServlet
 
+
 @WebServlet("/FHIR/R4/*", loadOnStartup = 1, displayName = "FHIR Facade")
 class FHIRR4RestfulServer(
     @Qualifier("R4") fhirContext: FhirContext,
@@ -26,10 +27,12 @@ class FHIRR4RestfulServer(
     val allergyIntoleranceProvider: AllergyIntoleranceProvider,
     val conditionProvider: ConditionProvider,
     val immunisationProvider: ImmunisationProvider,
-    val observationProvider: ObservationProvider,
+
+    val observationSearchProvider: ObservationSearchProvider,
     val procedureProvider: ProcedureProvider,
     val diagnosticReportProvider: DiagnosticReportProvider,
-    val patientProvider: PatientProvider,
+
+    val patientSearchProvider: PatientSearchProvider,
     val documentReferenceProvider: DocumentReferenceProvider,
     val binaryProvider: BinaryProvider,
     val specimenProvider: SpecimenProvider,
@@ -55,16 +58,19 @@ class FHIRR4RestfulServer(
         registerProvider(allergyIntoleranceProvider)
         registerProvider(conditionProvider)
         registerProvider(immunisationProvider)
-        registerProvider(observationProvider)
+
         registerProvider(procedureProvider)
         registerProvider(diagnosticReportProvider)
-        registerProvider(patientProvider)
+
         registerProvider(binaryProvider)
         registerProvider(documentReferenceProvider)
         registerProvider(specimenProvider)
         registerProvider(consentProvider)
 
         registerProvider(questionnaireResponseProvider)
+
+        registerProvider(observationSearchProvider)
+        registerProvider(patientSearchProvider)
 
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(
