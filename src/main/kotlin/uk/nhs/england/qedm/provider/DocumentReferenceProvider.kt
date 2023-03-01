@@ -50,6 +50,11 @@ class DocumentReferenceProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         val healthcareServices = mutableListOf<DocumentReference>()
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"DocumentReference")
         if (resource != null && resource is Bundle) {
+            for (entry in resource.entry) {
+                if (entry.hasResource() && entry.resource is DocumentReference) {
+                    entry.resource = fixUrl(entry.resource as DocumentReference)
+                }
+            }
             return resource
         }
 
