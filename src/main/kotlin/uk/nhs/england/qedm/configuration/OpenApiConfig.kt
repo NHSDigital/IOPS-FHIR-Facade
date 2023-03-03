@@ -45,7 +45,7 @@ open class OpenApiConfig {
                 Info()
                     .title(fhirServerProperties.server.name)
                     .version(fhirServerProperties.server.version)
-                    .description(""
+                    .description("Note queries of the form ?patient:identifier=`https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` may have limited support, especially from international EPR vendors. It is mostly to be used on central NHS systems."
                         /*
                                 "\n\n For Patient Document Queries and Document Notifications, see [Access to Health Documents](http://lb-fhir-mhd-1617422145.eu-west-2.elb.amazonaws.com/)."
                                 + "\n\n To add patient data, demographic queries and FHIR Subscription interactions, see [Events and Subscriptions](http://lb-hl7-tie-1794188809.eu-west-2.elb.amazonaws.com/)"
