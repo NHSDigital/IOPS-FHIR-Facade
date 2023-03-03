@@ -11,11 +11,12 @@ import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
+class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val awsPatient: AWSPatient) {
 
     @Read(type=Task::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Task? {
@@ -27,6 +28,7 @@ class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Task.SP_PATIENT) task : ReferenceParam?,
+        @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = Task.SP_AUTHORED_ON)  date : DateRangeParam?,
         @OptionalParam(name = Task.SP_CODE)  code :TokenParam?,
         @OptionalParam(name = Task.SP_IDENTIFIER)  identifier :TokenParam?,
@@ -35,8 +37,8 @@ class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle?{
-        val tasks = mutableListOf<Task>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Task")
+        val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString,"Task")
         if (resource != null && resource is Bundle) {
             return resource
         }

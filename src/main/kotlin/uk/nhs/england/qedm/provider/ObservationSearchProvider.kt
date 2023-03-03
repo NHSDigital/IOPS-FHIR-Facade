@@ -7,13 +7,14 @@ import ca.uhn.fhir.rest.param.StringParam
 import ca.uhn.fhir.rest.param.TokenParam
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.configuration.FHIRServerProperties
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 
 @Component
-class ObservationSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, var fhirServerProperties: FHIRServerProperties)  {
+class ObservationSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, var awsPatient: AWSPatient)  {
 
     @Read(type=Observation::class)
     fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Observation? {
@@ -24,6 +25,7 @@ class ObservationSearchProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Observation.SP_PATIENT) patient : ReferenceParam?,
+        @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = Observation.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Observation.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Observation.SP_CODE)  status :TokenParam?,
@@ -32,10 +34,9 @@ class ObservationSearchProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
-        val observations = mutableListOf<Observation>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString, "Observation")
+        val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString, "Observation")
         if (resource != null && resource is Bundle) {
-
             return resource
         }
 

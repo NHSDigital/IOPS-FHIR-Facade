@@ -11,11 +11,13 @@ import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class MedicationRequestProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
+class MedicationRequestProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor,
+    val awsPatient: AWSPatient)  {
 
 
     @Read(type=MedicationRequest::class)
@@ -28,6 +30,7 @@ class MedicationRequestProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = MedicationRequest.SP_PATIENT) patient : ReferenceParam?,
+        @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = MedicationRequest.SP_AUTHOREDON)  date : DateRangeParam?,
         @OptionalParam(name = MedicationRequest.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = MedicationRequest.SP_STATUS)  status :TokenParam?,
@@ -35,8 +38,8 @@ class MedicationRequestProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
-        val medicationRequests = mutableListOf<MedicationRequest>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"MedicationRequest")
+        val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString,"MedicationRequest")
         if (resource != null && resource is Bundle) {
             return resource
         }

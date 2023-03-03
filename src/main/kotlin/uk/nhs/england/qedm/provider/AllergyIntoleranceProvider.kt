@@ -11,11 +11,13 @@ import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class AllergyIntoleranceProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
+class AllergyIntoleranceProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor,
+    var awsPatient : AWSPatient)  {
 
 
     @Read(type =AllergyIntolerance::class)
@@ -24,10 +26,11 @@ class AllergyIntoleranceProvider(var cognitoAuthInterceptor: CognitoAuthIntercep
         return if (resource is AllergyIntolerance) resource else null
     }
 
-    @Search(type =AllergyIntolerance::class)
+    @Search(type=AllergyIntolerance::class)
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = AllergyIntolerance.SP_PATIENT) patient : ReferenceParam?,
+        @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = AllergyIntolerance.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS)  status :TokenParam?,
@@ -35,10 +38,11 @@ class AllergyIntoleranceProvider(var cognitoAuthInterceptor: CognitoAuthIntercep
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
-        val allergyIntolerances = mutableListOf<AllergyIntolerance>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"AllergyIntolerance")
+        val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
+
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString,"AllergyIntolerance")
         if (resource != null && resource is Bundle) {
-            resource
+            return resource
         }
         return null
     }

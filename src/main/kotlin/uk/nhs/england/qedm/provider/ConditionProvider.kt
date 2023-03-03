@@ -11,11 +11,12 @@ import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class ConditionProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
+class ConditionProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, var awsPatient: AWSPatient)  {
 
 
     @Read(type=Condition::class)
@@ -28,6 +29,7 @@ class ConditionProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
     fun search(
         httpRequest : HttpServletRequest,
         @OptionalParam(name = Condition.SP_PATIENT) patient : ReferenceParam?,
+        @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = Condition.SP_RECORDED_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Condition.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Condition.SP_CLINICAL_STATUS)  status :TokenParam?,
@@ -35,8 +37,8 @@ class ConditionProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor)  {
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
-        val conditions = mutableListOf<Condition>()
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, httpRequest.queryString,"Condition")
+        val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString,"Condition")
         if (resource != null && resource is Bundle) {
             return resource
         }
