@@ -16,7 +16,8 @@ class FHIRR4RestfulServer(
     @Qualifier("R4") fhirContext: FhirContext,
     val fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties,
     val messageProperties: uk.nhs.england.qedm.configuration.MessageProperties,
-    public val encounterProvider: EncounterProvider,
+    val encounterProvider: EncounterProvider,
+    val episodeOfCarePlainProvider: EpisodeOfCarePlainProvider,
     val medicationDispenseProvider: MedicationDispenseProvider,
     val medicationRequestProvider: MedicationRequestProvider,
     val medicationStatementProvider: MedicationStatementProvider,
@@ -47,6 +48,7 @@ class FHIRR4RestfulServer(
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
         registerProvider(encounterProvider)
+        registerProvider(episodeOfCarePlainProvider)
 
         registerProvider(medicationDispenseProvider)
         registerProvider(medicationRequestProvider)
