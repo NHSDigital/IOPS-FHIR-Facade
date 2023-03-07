@@ -868,7 +868,7 @@ open class OpenApiConfig {
                     .addParametersItem(Parameter()
                         .name("patient")
                         .`in`("query")
-                        .required(true)
+                        .required(false)
                         .style(Parameter.StyleEnum.SIMPLE)
                         .description("The patient that is the subject of the questionnaire response")
                         .schema(StringSchema().example("073eef49-81ee-4c2e-893b-bc2e4efd2630"))
