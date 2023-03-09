@@ -10,8 +10,7 @@ import uk.nhs.england.qedm.configuration.MessageProperties
 
 @Interceptor
 class CapabilityStatementInterceptor(
-    val fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties,
-    val messageProperties: uk.nhs.england.qedm.configuration.MessageProperties
+    val fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties
 ) {
 
 
@@ -21,8 +20,8 @@ class CapabilityStatementInterceptor(
         // Cast to the appropriate version
         val cs: CapabilityStatement = theCapabilityStatement as CapabilityStatement
 
-        cs.implementation.url = messageProperties.getFhirServerBaseUrl()
-        cs.implementation.description = "NHS Digital UKCore API Reference Implementation"
+        cs.implementation.url = fhirServerProperties.server.baseUrl + "/FHIR/R4"
+        cs.implementation.description = "NHS England UKCore API Reference Implementation"
     }
 
     fun getResourceComponent(type : String, cs : CapabilityStatement ) : CapabilityStatement.CapabilityStatementRestResourceComponent? {

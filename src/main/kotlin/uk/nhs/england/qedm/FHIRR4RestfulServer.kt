@@ -80,7 +80,7 @@ class FHIRR4RestfulServer(
                 fhirServerProperties
             )
         interceptorService.registerInterceptor(awsAuditEventLoggingInterceptor)
-        registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties, messageProperties))
+        registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties))
 
 
         isDefaultPrettyPrint = true
