@@ -4,6 +4,7 @@ import ca.uhn.fhir.rest.annotation.*
 import ca.uhn.fhir.rest.param.DateRangeParam
 import ca.uhn.fhir.rest.param.ReferenceParam
 import ca.uhn.fhir.rest.param.StringParam
+import ca.uhn.fhir.rest.param.TokenOrListParam
 import ca.uhn.fhir.rest.param.TokenParam
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
@@ -28,10 +29,12 @@ class ObservationSearchProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = Observation.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Observation.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Observation.SP_CODE)  status :TokenParam?,
+        @OptionalParam(name = Observation.SP_CODE) code :TokenParam?,
         @OptionalParam(name = Observation.SP_CATEGORY)  category: TokenParam?,
         @OptionalParam(name = Observation.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = Observation.SP_STATUS, )  status: TokenOrListParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
+        @OptionalParam(name = "_sort")  sort : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
         val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
