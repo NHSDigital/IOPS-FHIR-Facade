@@ -1,6 +1,8 @@
 package uk.nhs.england.qedm.interceptor
 
 import ca.uhn.fhir.context.FhirContext
+import ca.uhn.fhir.rest.api.EncodingEnum
+import ca.uhn.fhir.rest.api.MethodOutcome
 import ca.uhn.fhir.rest.client.api.IClientInterceptor
 import ca.uhn.fhir.rest.client.api.IHttpRequest
 import ca.uhn.fhir.rest.client.api.IHttpResponse
@@ -15,6 +17,7 @@ import com.amazonaws.services.cognitoidp.model.InitiateAuthResult
 import org.apache.commons.io.IOUtils
 import org.hl7.fhir.r4.model.Binary
 import org.hl7.fhir.r4.model.Bundle
+import org.hl7.fhir.r4.model.OperationOutcome
 import org.hl7.fhir.r4.model.Resource
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -78,8 +81,12 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties,
 
     @Throws(Exception::class)
     fun readFromUrl(path: String, queryParams: String?, resourceName: String?): Resource? {
-        val responseObject = ResponseObject()
         val url = messageProperties.getCdrFhirServer()
+        return readFromUrl(url,path, queryParams, resourceName)
+    }
+    @Throws(Exception::class)
+    fun readFromUrl(url: String?, path: String, queryParams: String?, resourceName: String?): Resource? {
+        val responseObject = ResponseObject()
         var myUrl: URL? = null
         myUrl = if (queryParams != null) {
             URL("$url$path?$queryParams")
@@ -126,7 +133,7 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties,
                 }
             } catch (ex: FileNotFoundException) {
                 retry--
-                throw ResourceNotFoundException(ex.message)
+                throw ResourceNotFoundException(getErrorStreamMessage(conn, ex))
             } catch (ex: Exception) {
                 retry--
                 if (ex.message != null) {
@@ -134,10 +141,10 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties,
 
                         this.authenticationResult = null
                         if (retry < 1)
-                            throw UnprocessableEntityException(ex.message)
+                            throw UnprocessableEntityException(getErrorStreamMessage(conn, ex))
                     }
                 } else {
-                    throw UnprocessableEntityException(ex.message)
+                    throw UnprocessableEntityException(getErrorStreamMessage(conn, ex))
                 }
             }
         }
@@ -183,11 +190,11 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties,
                 if (ex.message != null) {
                     if (ex.message!!.contains("401") || ex.message!!.contains("403")) {
                         this.authenticationResult = null
-                        if (retry < 1) throw UnprocessableEntityException(ex.message)
+                        if (retry < 1) throw UnprocessableEntityException(getErrorStreamMessage(conn, ex))
                     }
 
                 } else {
-                    throw UnprocessableEntityException(ex.message)
+                    throw UnprocessableEntityException(getErrorStreamMessage(conn, ex))
                 }
             }
         }
@@ -308,4 +315,109 @@ class CognitoAuthInterceptor(val messageProperties: MessageProperties,
         }
     }
 
+    private fun getErrorStreamMessage(conn: HttpURLConnection, ex: Exception) : String? {
+        if (conn.errorStream == null) return ex.message
+        val `is` = InputStreamReader(conn.errorStream)
+        try {
+            val rd = BufferedReader(`is`)
+            val resource: Resource = ctx.newJsonParser().parseResource(IOUtils.toString(rd)) as Resource
+            if (resource != null && resource is OperationOutcome) {
+                return resource.issueFirstRep.diagnostics
+            }
+        }
+        catch (exOther: Exception) {
+            throw ex
+        } finally {
+            `is`.close()
+        }
+        return ex.message
+    }
+
+    fun postResource(encoding : EncodingEnum, resource : Resource): MethodOutcome {
+
+        val method = MethodOutcome()
+        method.created = true
+        val opOutcome = OperationOutcome()
+
+        method.operationOutcome = opOutcome
+
+        val url = messageProperties.getOrchestrationFhirServer()
+        var myUrl: URL? = null
+        val queryParams = ""
+        val path = "/FHIR/R4/"
+        myUrl = if (queryParams != null) {
+            URL("$url$path?$queryParams")
+        } else {
+            URL(url + path)
+        }
+        var retry = 2
+        var input: ByteArray
+        if (encoding.equals(EncodingEnum.XML)) {
+            input = ctx.newXmlParser().encodeResourceToString(resource).toByteArray()
+        } else {
+            input = ctx.newJsonParser().encodeResourceToString(resource).toByteArray()
+        }
+
+        while (retry > 0) {
+            val conn = myUrl.openConnection() as HttpURLConnection
+            if (encoding.equals(EncodingEnum.XML)) {
+                conn.setRequestProperty("Content-Type", "application/fhir+xml")
+            } else {
+                conn.setRequestProperty("Content-Type", "application/fhir+json")
+            }
+            conn.setRequestProperty("Accept", "application/fhir+json")
+            conn.requestMethod = "POST"
+            conn.setDoOutput(true)
+            // val jsonInputString = ctx.newJsonParser().encodeResourceToString(request.inputStream)
+            try {
+                conn.getOutputStream().use { os ->
+
+                    os.write(input, 0, input.size)
+                }
+                //conn.connect()
+                val `is` = InputStreamReader(conn.inputStream)
+                try {
+                    val rd = BufferedReader(`is`)
+                    val postedResource :Resource = ctx.newJsonParser().parseResource(IOUtils.toString(rd)) as Resource
+                    if (postedResource != null && postedResource is Resource) {
+                        method.resource = postedResource
+                    }
+                    return method
+                } finally {
+                    `is`.close()
+                }
+
+            }
+            catch (ex : IOException) {
+                val `is` = InputStreamReader(conn.errorStream)
+                try {
+                    val rd = BufferedReader(`is`)
+                    val postedResource: Resource = ctx.newJsonParser().parseResource(IOUtils.toString(rd)) as Resource
+                    if (postedResource != null && postedResource is Resource) {
+                        method.resource = postedResource
+                    }
+                    return method
+                }
+                catch (exOther: Exception) {
+                    throw ex
+                } finally {
+                    `is`.close()
+                }
+
+            }
+            catch (ex: Exception) {
+                retry--
+                if (ex.message != null) {
+                    if (ex.message!!.contains("401") || ex.message!!.contains("403")) {
+                        //this.authenticationResult = null
+                        if (retry < 1) throw UnprocessableEntityException(ex.message)
+                    }
+
+                } else {
+                    throw UnprocessableEntityException(ex.message)
+                }
+            }
+        }
+        throw UnprocessableEntityException("Number of retries exhausted")
+    }
 }

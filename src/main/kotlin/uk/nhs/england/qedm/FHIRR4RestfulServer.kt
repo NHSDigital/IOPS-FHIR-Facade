@@ -40,7 +40,9 @@ class FHIRR4RestfulServer(
     val consentProvider: ConsentProvider,
     val questionnaireResponseProvider: QuestionnaireResponseProvider,
     val questionnairePlainProvider: QuestionnairePlainProvider,
-    val questionnaireProvider: QuestionnaireProvider
+    val questionnaireProvider: QuestionnaireProvider,
+    val valueSetProvider: ValueSetProvider,
+    val transactionProvider: TransactionProvider
 
 ) : RestfulServer(fhirContext) {
 
@@ -77,6 +79,9 @@ class FHIRR4RestfulServer(
 
         registerProvider(observationSearchProvider)
         registerProvider(patientSearchProvider)
+
+        registerProvider(valueSetProvider)
+        registerProvider(transactionProvider)
 
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(

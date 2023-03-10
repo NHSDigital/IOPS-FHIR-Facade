@@ -1,0 +1,29 @@
+package uk.nhs.england.qedm.provider
+
+import ca.uhn.fhir.rest.annotation.Transaction
+import ca.uhn.fhir.rest.annotation.TransactionParam
+import ca.uhn.fhir.rest.api.EncodingEnum
+import ca.uhn.fhir.rest.api.MethodOutcome
+import ca.uhn.fhir.rest.api.server.RequestDetails
+import ca.uhn.fhir.rest.server.RestfulServerUtils
+import org.hl7.fhir.r4.model.*
+import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.configuration.MessageProperties
+import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
+import javax.servlet.http.HttpServletRequest
+
+@Component
+class TransactionProvider(private val cognitoAuthInterceptor: CognitoAuthInterceptor,
+                          private val messageProperties: MessageProperties
+   ) {
+
+
+    @Transaction
+    fun transaction(httpRequest : HttpServletRequest, requestDetails: RequestDetails?, @TransactionParam bundle:Bundle,
+    ): MethodOutcome? {
+        var encoding = RestfulServerUtils.determineRequestEncodingNoDefault(requestDetails)
+        if (encoding == null) encoding = EncodingEnum.JSON
+        return cognitoAuthInterceptor.postResource(encoding, bundle)
+    }
+
+}
