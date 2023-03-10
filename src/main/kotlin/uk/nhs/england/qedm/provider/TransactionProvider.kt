@@ -20,10 +20,11 @@ class TransactionProvider(private val cognitoAuthInterceptor: CognitoAuthInterce
 
     @Transaction
     fun transaction(httpRequest : HttpServletRequest, requestDetails: RequestDetails?, @TransactionParam bundle:Bundle,
-    ): MethodOutcome? {
+    ): Bundle {
         var encoding = RestfulServerUtils.determineRequestEncodingNoDefault(requestDetails)
         if (encoding == null) encoding = EncodingEnum.JSON
-        return cognitoAuthInterceptor.postResource(encoding, bundle)
+        val response = cognitoAuthInterceptor.postResource(encoding, bundle)
+        return response.resource as Bundle
     }
 
 }
