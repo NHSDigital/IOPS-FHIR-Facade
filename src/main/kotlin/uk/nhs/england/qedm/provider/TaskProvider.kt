@@ -4,10 +4,7 @@ import ca.uhn.fhir.rest.annotation.IdParam
 import ca.uhn.fhir.rest.annotation.OptionalParam
 import ca.uhn.fhir.rest.annotation.Read
 import ca.uhn.fhir.rest.annotation.Search
-import ca.uhn.fhir.rest.param.DateRangeParam
-import ca.uhn.fhir.rest.param.ReferenceParam
-import ca.uhn.fhir.rest.param.StringParam
-import ca.uhn.fhir.rest.param.TokenParam
+import ca.uhn.fhir.rest.param.*
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
@@ -32,7 +29,7 @@ class TaskProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val awsPa
         @OptionalParam(name = Task.SP_AUTHORED_ON)  date : DateRangeParam?,
         @OptionalParam(name = Task.SP_CODE)  code :TokenParam?,
         @OptionalParam(name = Task.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Task.SP_STATUS)  status :TokenParam?,
+        @OptionalParam(name = Task.SP_STATUS)  status: TokenOrListParam?,
         @OptionalParam(name = Task.SP_RES_ID)  resid : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?

@@ -4,10 +4,7 @@ import ca.uhn.fhir.rest.annotation.IdParam
 import ca.uhn.fhir.rest.annotation.OptionalParam
 import ca.uhn.fhir.rest.annotation.Read
 import ca.uhn.fhir.rest.annotation.Search
-import ca.uhn.fhir.rest.param.DateRangeParam
-import ca.uhn.fhir.rest.param.ReferenceParam
-import ca.uhn.fhir.rest.param.StringParam
-import ca.uhn.fhir.rest.param.TokenParam
+import ca.uhn.fhir.rest.param.*
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
@@ -32,7 +29,7 @@ class ImmunisationProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor,
         @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = Immunization.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Immunization.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Immunization.SP_STATUS)  status :TokenParam?,
+        @OptionalParam(name = Immunization.SP_STATUS)  status: TokenOrListParam?,
         @OptionalParam(name = Immunization.SP_RES_ID)  resid : StringParam?
     ): Bundle? {
         val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)

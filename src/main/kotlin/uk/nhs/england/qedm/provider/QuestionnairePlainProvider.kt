@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.rest.annotation.*
 import ca.uhn.fhir.rest.param.DateParam
 import ca.uhn.fhir.rest.param.StringParam
+import ca.uhn.fhir.rest.param.TokenOrListParam
 import ca.uhn.fhir.rest.param.TokenParam
 import mu.KLogging
 import org.hl7.fhir.r4.model.*
@@ -36,7 +37,7 @@ class QuestionnairePlainProvider (@Qualifier("R4") private val fhirContext: Fhir
         @OptionalParam(name = Questionnaire.SP_DATE) date: DateParam?,
         @OptionalParam(name = Questionnaire.SP_IDENTIFIER) identifier: TokenParam?,
         @OptionalParam(name = Questionnaire.SP_PUBLISHER) publisher: StringParam?,
-        @OptionalParam(name = Questionnaire.SP_STATUS) status: TokenParam?,
+        @OptionalParam(name = Questionnaire.SP_STATUS) status: TokenOrListParam?,
         @OptionalParam(name = Questionnaire.SP_TITLE) title: StringParam?,
         @OptionalParam(name = Questionnaire.SP_VERSION) version: TokenParam?,
         @OptionalParam(name = Questionnaire.SP_DEFINITION) definition: TokenParam?,
