@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.server.RestfulServer
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.nhs.england.qedm.interceptor.AWSAuditEventLoggingInterceptor
 import uk.nhs.england.qedm.interceptor.CapabilityStatementInterceptor
+import uk.nhs.england.qedm.interceptor.ValidationInterceptor
 import uk.nhs.england.qedm.provider.*
 import java.util.*
 import javax.servlet.annotation.WebServlet
@@ -39,8 +40,6 @@ class FHIRR4RestfulServer(
     val specimenProvider: SpecimenProvider,
     val consentProvider: ConsentProvider,
     val questionnaireResponseProvider: QuestionnaireResponseProvider,
-    val questionnairePlainProvider: QuestionnairePlainProvider,
-    val questionnaireProvider: QuestionnaireProvider,
     val valueSetProvider: ValueSetProvider,
     val transactionProvider: TransactionProvider
 
@@ -74,9 +73,6 @@ class FHIRR4RestfulServer(
         registerProvider(consentProvider)
 
         registerProvider(questionnaireResponseProvider)
-        registerProvider(questionnaireProvider)
-        registerProvider(questionnairePlainProvider)
-
         registerProvider(observationSearchProvider)
         registerProvider(patientSearchProvider)
 
@@ -90,6 +86,9 @@ class FHIRR4RestfulServer(
             )
         interceptorService.registerInterceptor(awsAuditEventLoggingInterceptor)
         registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties))
+
+        val validationInterceptor = ValidationInterceptor(fhirContext,messageProperties)
+        interceptorService.registerInterceptor(validationInterceptor)
 
 
         isDefaultPrettyPrint = true
