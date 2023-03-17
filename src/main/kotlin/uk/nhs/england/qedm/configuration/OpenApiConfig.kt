@@ -28,13 +28,9 @@ open class OpenApiConfig {
     val CLINICAL = "Clinical"
     val DIAGNOSTICS = "Diagnostics"
     val MEDICATION = "Medication"
-    val ADMINISTRATION = "Administration"
+    val ADMINISTRATION = "Health Administration"
     var MHD = "Documents"
-    var FORMS = "Structured Data Capture"
-
-    var PDQ = "Patient Demographic Queries"
-    var APIM = "Security and API Management"
-    var WORKFLOW = "Workflow"
+    var APIM = "Security"
     @Bean
     open fun customOpenAPI(
         fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties
@@ -64,13 +60,7 @@ open class OpenApiConfig {
         )
 
         // Tags
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(PDQ)
-                .description("[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
-                        + " [HL7 UK - UKCore FHIR Access](https://build.fhir.org/ig/HL7-UK/UK-Core-Access/patient_search.html)"
-                        + " [IHE Patient Demographics Query for mobile (PDQm)](https://profiles.ihe.net/ITI/PDQm/index.html)")
-        )
+
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
                 .name(QEDM + ADMINISTRATION)
@@ -107,26 +97,14 @@ open class OpenApiConfig {
                     "[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
                             + " [IHE MHD ITI-67 and ITI-68](https://profiles.ihe.net/ITI/MHD/ITI-67.html)")
         )
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(FORMS)
-                .description("[HL7 FHIR Structured Data Capture](http://hl7.org/fhir/uv/sdc/) \n"
-                )
-        )
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(WORKFLOW)
-                .description(
-                    "[HL7 FHIR Workflow](http://hl7.org/fhir/R4/workflow-module.html) \n"
-                            + " [HL7 FHIR Structure Data Capture](http://hl7.org/fhir/uv/sdc/workflow.html)")
-        )
+
 
 
         // Administrative
         var patientItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(PDQ)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -144,7 +122,7 @@ open class OpenApiConfig {
         patientItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(PDQ)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Patient Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -859,64 +837,11 @@ open class OpenApiConfig {
 
         // QuestionnaireResponse
 
-        var questionnaireResponseItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(FORMS)
-                    .summary("Query Form Results")
-                    .description("This allows querying results of a QuestionnaireResponse")
-                    .addParametersItem(Parameter()
-                        .name("patient")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The patient that is the subject of the questionnaire response")
-                        .schema(StringSchema().example("073eef49-81ee-4c2e-893b-bc2e4efd2630"))
-                    )
-                    .addParametersItem(Parameter()
-                        .name("patient:identifier")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Who/what is the subject of the questionnaire response. `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
-                        .schema(StringSchema())
-                    )
-                    /*    .addParametersItem(Parameter()
-                            .name("questionnaire")
-                            .`in`("query")
-                            .required(false)
-                            .style(Parameter.StyleEnum.SIMPLE)
-                            .description("The questionnaire the answers are provided for")
-                            .schema(StringSchema())
-                            .example("https://example.fhir.nhs.uk/Questionnaire/Simple-Blood-Pressure")
-                        )*/
-                    .responses(getApiResponses())
-            )
-
-        oas.path("/FHIR/R4/QuestionnaireResponse",questionnaireResponseItem)
-
-        questionnaireResponseItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(FORMS)
-                    .summary("Read Endpoint")
-                    .responses(getApiResponses())
-                    .addParametersItem(Parameter()
-                        .name("id")
-                        .`in`("path")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The ID of the resource")
-                        .schema(StringSchema())
-                    )
-            )
-
-        oas.path("/FHIR/R4/QuestionnaireResponse/{id}",questionnaireResponseItem)
 
         var serviceRequestItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(WORKFLOW)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Query Referrals and Orders")
                     .addParametersItem(Parameter()
                         .name("patient")
@@ -966,7 +891,7 @@ open class OpenApiConfig {
         serviceRequestItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(WORKFLOW)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -984,7 +909,7 @@ open class OpenApiConfig {
         var taskItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(WORKFLOW)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Query Tasks")
                     .addParametersItem(Parameter()
                         .name("patient")
@@ -1034,7 +959,7 @@ open class OpenApiConfig {
         taskItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(WORKFLOW)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
