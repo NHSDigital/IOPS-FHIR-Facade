@@ -32,6 +32,8 @@ class PatientSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) 
         @OptionalParam(name = Patient.SP_IDENTIFIER) identifier : TokenParam?,
         @OptionalParam(name= Patient.SP_NAME) name : StringParam?,
         @OptionalParam(name= Patient.SP_TELECOM) phone : StringParam?,
+        @OptionalParam(name= Patient.SP_RES_ID) id : StringParam?,
+        @OptionalParam(name = "_revinclude")  revinclude : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {

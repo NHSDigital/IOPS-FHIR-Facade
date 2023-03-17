@@ -33,6 +33,7 @@ class EncounterProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val 
         @OptionalParam(name = Encounter.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Encounter.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = Encounter.SP_RES_ID)  resid : StringParam?,
+        @OptionalParam(name = "_revinclude")  revinclude : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
