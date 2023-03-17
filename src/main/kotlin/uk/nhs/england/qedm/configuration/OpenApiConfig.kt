@@ -7,12 +7,12 @@ import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.examples.Example
 import io.swagger.v3.oas.models.info.License
 import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.media.BooleanSchema
 import io.swagger.v3.oas.models.media.Content
 import io.swagger.v3.oas.models.media.MediaType
 
 import io.swagger.v3.oas.models.media.StringSchema
 import io.swagger.v3.oas.models.parameters.Parameter
-import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
 import io.swagger.v3.oas.models.servers.Server
@@ -621,6 +621,130 @@ open class OpenApiConfig {
 
         oas.path("/FHIR/R4/EpisodeOfCare",episodeOfCareItem)
 
+        val appointmentItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(ADMINISTRATION)
+                    .description("Search Appointments")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("patient")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("One of the individuals of the appointment is this patient")
+                        .schema(StringSchema())
+                        .example("073eef49-81ee-4c2e-893b-bc2e4efd2630")
+                    )
+                    .addParametersItem(Parameter()
+                        .name("patient:identifier")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("One of the individuals of the appointment is this patient `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("date")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Appointment date/time.")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("status")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The overall status of the appointment `proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist`")
+                        .schema(StringSchema())
+                    )
+
+            )
+
+        oas.path("/FHIR/R4/Appointment",appointmentItem)
+
+        val scheduleItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(ADMINISTRATION)
+                    .description("Search Schedules")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("specialty")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Type of specialty needed")
+                        .schema(StringSchema())
+                        .example("https://fhir.hl7.org.uk/CodeSystem/UKCore-PracticeSettingCode|100")
+                    )
+                    .addParametersItem(Parameter()
+                        .name("date")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Search for Schedule resources that have a period that contains this date specified")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("active")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Is the schedule in active use")
+                        .schema(BooleanSchema())
+                    )
+
+            )
+
+        oas.path("/FHIR/R4/Schedule",scheduleItem)
+
+        val slotItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(ADMINISTRATION)
+                    .description("Search Schedules")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("schedule")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The schedule resource that this slot defines an interval of status information")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("specialty")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The specialty of a practitioner that would be required to perform the service requested in this appointment\t")
+                        .schema(StringSchema())
+                        .example("https://fhir.hl7.org.uk/CodeSystem/UKCore-PracticeSettingCode|100")
+                    )
+                    .addParametersItem(Parameter()
+                        .name("start")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Appointment date/time.")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("status")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The free/busy status of the appointment `busy | free | busy-unavailable | busy-tentative | entered-in-error`")
+                        .schema(StringSchema())
+                    )
+
+            )
+
+        oas.path("/FHIR/R4/Slot",slotItem)
+
         // MedicationRequest
         var medicationRequestItem = PathItem()
             .get(
@@ -857,6 +981,14 @@ open class OpenApiConfig {
                         .required(false)
                         .style(Parameter.StyleEnum.SIMPLE)
                         .description("Who/what is the subject of the service request. `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("category")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Classification of service")
                         .schema(StringSchema())
                     )
                     .addParametersItem(Parameter()
