@@ -21,6 +21,7 @@ import java.util.*
 class AWSPatient (val messageProperties: MessageProperties, val awsClient: IGenericClient,
                //sqs: AmazonSQS?,
                   @Qualifier("R4") val ctx: FhirContext,
+                  val awsOrganization: AWSOrganization,
                   val fhirServerProperties: FHIRServerProperties) {
 
 
@@ -38,14 +39,23 @@ class AWSPatient (val messageProperties: MessageProperties, val awsClient: IGene
             }
 
             for (param in params) {
-                val name: String = param.split("=").get(0)
+                val name: String = java.net.URLDecoder.decode(param.split("=").get(0), StandardCharsets.UTF_8.name())
                 val value: String = param.split("=").get(1)
-                if (patient != null && java.net.URLDecoder.decode(name, StandardCharsets.UTF_8.name()).equals("patient:identifier")) {
+                val newvalue: String = java.net.URLDecoder.decode(param.split("=").get(1), StandardCharsets.UTF_8.name())
+                if (patient != null && name.equals("patient:identifier")) {
                     newParams.add( "patient=" + patient.idElement.idPart)
                 } else if (name.equals("_content")) {
                     newParams.add("title=$value")
                 } else if (name.equals("_total")) {
                     //newParams.add("title=$value")
+                } else if (name.equals("custodian:identifier") && newvalue.split("|").size>1) {
+                    val ids = newvalue.split("|")
+                    val org = awsOrganization.get(Identifier().setSystem(ids[0]).setValue(ids[1]))
+                    if (org != null) {
+                        newParams.add( "custodian=" + org.idElement.idPart)
+                    } else {
+                        newParams.add( "custodian=" + value)
+                    }
                 }
                 else {
                     newParams.add(param)
