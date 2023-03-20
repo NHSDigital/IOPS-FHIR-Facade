@@ -969,7 +969,8 @@ open class OpenApiConfig {
             .get(
                 Operation()
                     .addTagsItem(MHD)
-                    .summary("Any url can be used for retrieval of a raw document. See [document binary](https://care-connect-documents-api.netlify.app/api_documents_binary.html)")
+                    .summary("Any url can be used for retrieval of a raw document.")
+                    .description("See [document binary](https://care-connect-documents-api.netlify.app/api_documents_binary.html)")
                     .responses(getApiResponsesBinary())
                     .addParametersItem(Parameter()
                         .name("id")
