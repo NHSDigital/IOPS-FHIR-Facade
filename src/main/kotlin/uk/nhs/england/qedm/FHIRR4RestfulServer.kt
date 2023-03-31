@@ -25,8 +25,6 @@ class FHIRR4RestfulServer(
     val medicationRequestProvider: MedicationRequestProvider,
     val medicationStatementProvider: MedicationStatementProvider,
 
-    val serviceRequestProvider: ServiceRequestProvider,
-    val taskProvider: TaskProvider,
     val appointmentProvider: AppointmentProvider,
     val slotProvider: SlotProvider,
     val scheduleProvider: ScheduleProvider,
@@ -64,9 +62,6 @@ class FHIRR4RestfulServer(
         registerProvider(medicationDispenseProvider)
         registerProvider(medicationRequestProvider)
         registerProvider(medicationStatementProvider)
-
-        registerProvider(taskProvider)
-        registerProvider(serviceRequestProvider)
 
         registerProvider(allergyIntoleranceProvider)
         registerProvider(conditionProvider)
