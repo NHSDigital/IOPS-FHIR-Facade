@@ -78,9 +78,11 @@ class AWSAuditEventLoggingInterceptor(
                 }
             }
         }
-        val auditEvent = createAudit(theRequestDetails.servletRequest, fhirResourceName, patientId, fhirResource)
-        auditEvent.outcome = AuditEvent.AuditEventOutcome._0
-        writeAWS(auditEvent)
+        if (fhirResourceName === null || !fhirResourceName.equals("metadata")) {
+            val auditEvent = createAudit(theRequestDetails.servletRequest, fhirResourceName, patientId, fhirResource)
+            auditEvent.outcome = AuditEvent.AuditEventOutcome._0
+            writeAWS(auditEvent)
+        }
     }
 
 
@@ -128,10 +130,12 @@ class AWSAuditEventLoggingInterceptor(
                     }
                 }
             }
-            val auditEvent =
-                createAudit(servletRequestDetails.servletRequest, fhirResourceName, patientId, fhirResource)
-            addAWSOutComeException(auditEvent, theException)
-            writeAWS(auditEvent)
+            if (fhirResourceName === null || !fhirResourceName.equals("metadata")) {
+                val auditEvent =
+                    createAudit(servletRequestDetails.servletRequest, fhirResourceName, patientId, fhirResource)
+                addAWSOutComeException(auditEvent, theException)
+                writeAWS(auditEvent)
+            }
         }
         return true
     }
