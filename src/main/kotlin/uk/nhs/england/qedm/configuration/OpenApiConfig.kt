@@ -7,12 +7,12 @@ import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.examples.Example
 import io.swagger.v3.oas.models.info.License
 import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.media.BooleanSchema
 import io.swagger.v3.oas.models.media.Content
 import io.swagger.v3.oas.models.media.MediaType
 
 import io.swagger.v3.oas.models.media.StringSchema
 import io.swagger.v3.oas.models.parameters.Parameter
-import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
 import io.swagger.v3.oas.models.servers.Server
@@ -28,13 +28,9 @@ open class OpenApiConfig {
     val CLINICAL = "Clinical"
     val DIAGNOSTICS = "Diagnostics"
     val MEDICATION = "Medication"
-    val ADMINISTRATION = "Administration"
+    val ADMINISTRATION = "Health Administration"
     var MHD = "Documents"
-    var FORMS = "Structured Data Capture"
-
-    var PDQ = "Patient Demographic Queries"
-    var APIM = "Security and API Management"
-    var WORKFLOW = "Workflow"
+    var APIM = "Security"
     @Bean
     open fun customOpenAPI(
         fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties
@@ -64,13 +60,7 @@ open class OpenApiConfig {
         )
 
         // Tags
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(PDQ)
-                .description("[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
-                        + " [HL7 UK - UKCore FHIR Access](https://build.fhir.org/ig/HL7-UK/UK-Core-Access/patient_search.html)"
-                        + " [IHE Patient Demographics Query for mobile (PDQm)](https://profiles.ihe.net/ITI/PDQm/index.html)")
-        )
+
         oas.addTagsItem(
             io.swagger.v3.oas.models.tags.Tag()
                 .name(QEDM + ADMINISTRATION)
@@ -107,26 +97,14 @@ open class OpenApiConfig {
                     "[HL7 FHIR Foundation Module](https://hl7.org/fhir/foundation-module.html) \n"
                             + " [IHE MHD ITI-67 and ITI-68](https://profiles.ihe.net/ITI/MHD/ITI-67.html)")
         )
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(FORMS)
-                .description("[HL7 FHIR Structured Data Capture](http://hl7.org/fhir/uv/sdc/) \n"
-                )
-        )
-        oas.addTagsItem(
-            io.swagger.v3.oas.models.tags.Tag()
-                .name(WORKFLOW)
-                .description(
-                    "[HL7 FHIR Workflow](http://hl7.org/fhir/R4/workflow-module.html) \n"
-                            + " [HL7 FHIR Structure Data Capture](http://hl7.org/fhir/uv/sdc/workflow.html)")
-        )
+
 
 
         // Administrative
         var patientItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(PDQ)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Read Endpoint")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -144,7 +122,7 @@ open class OpenApiConfig {
         patientItem = PathItem()
             .get(
                 Operation()
-                    .addTagsItem(PDQ)
+                    .addTagsItem(ADMINISTRATION)
                     .summary("Patient Option Search Parameters")
                     .responses(getApiResponses())
                     .addParametersItem(Parameter()
@@ -643,6 +621,130 @@ open class OpenApiConfig {
 
         oas.path("/FHIR/R4/EpisodeOfCare",episodeOfCareItem)
 
+        val appointmentItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(ADMINISTRATION)
+                    .description("Search Appointments")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("patient")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("One of the individuals of the appointment is this patient")
+                        .schema(StringSchema())
+                        .example("073eef49-81ee-4c2e-893b-bc2e4efd2630")
+                    )
+                    .addParametersItem(Parameter()
+                        .name("patient:identifier")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("One of the individuals of the appointment is this patient `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("date")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Appointment date/time.")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("status")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The overall status of the appointment `proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist`")
+                        .schema(StringSchema())
+                    )
+
+            )
+
+        oas.path("/FHIR/R4/Appointment",appointmentItem)
+
+        val scheduleItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(ADMINISTRATION)
+                    .description("Search Schedules")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("specialty")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Type of specialty needed")
+                        .schema(StringSchema())
+                        .example("https://fhir.hl7.org.uk/CodeSystem/UKCore-PracticeSettingCode|100")
+                    )
+                    .addParametersItem(Parameter()
+                        .name("date")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Search for Schedule resources that have a period that contains this date specified")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("active")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Is the schedule in active use")
+                        .schema(BooleanSchema())
+                    )
+
+            )
+
+        oas.path("/FHIR/R4/Schedule",scheduleItem)
+
+        val slotItem = PathItem()
+            .get(
+                Operation()
+                    .addTagsItem(ADMINISTRATION)
+                    .description("Search Schedules")
+                    .responses(getApiResponses())
+                    .addParametersItem(Parameter()
+                        .name("schedule")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The schedule resource that this slot defines an interval of status information")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("specialty")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The specialty of a practitioner that would be required to perform the service requested in this appointment\t")
+                        .schema(StringSchema())
+                        .example("https://fhir.hl7.org.uk/CodeSystem/UKCore-PracticeSettingCode|100")
+                    )
+                    .addParametersItem(Parameter()
+                        .name("start")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Appointment date/time.")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("status")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("The free/busy status of the appointment `busy | free | busy-unavailable | busy-tentative | entered-in-error`")
+                        .schema(StringSchema())
+                    )
+
+            )
+
+        oas.path("/FHIR/R4/Slot",slotItem)
+
         // MedicationRequest
         var medicationRequestItem = PathItem()
             .get(
@@ -791,7 +893,7 @@ open class OpenApiConfig {
                     .addParametersItem(Parameter()
                         .name("patient")
                         .`in`("query")
-                        .required(true)
+                        .required(false)
                         .style(Parameter.StyleEnum.SIMPLE)
                         .description("Who/what is the subject of the document")
                         .schema(StringSchema())
@@ -806,11 +908,35 @@ open class OpenApiConfig {
                         .schema(StringSchema())
                     )
                     .addParametersItem(Parameter()
+                        .name("type")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Kind of document `http://snomed.info/sct|736253002`")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("custodian:identifier")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Who/what is the subject of the document. `https://fhir.nhs.uk/Id/ods-organization-code|{odsCode}` ")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
                         .name("date")
                         .`in`("query")
                         .required(false)
                         .style(Parameter.StyleEnum.SIMPLE)
                         .description("When this document reference was created")
+                        .schema(StringSchema())
+                    )
+                    .addParametersItem(Parameter()
+                        .name("_getpages")
+                        .`in`("query")
+                        .required(false)
+                        .style(Parameter.StyleEnum.SIMPLE)
+                        .description("Implementation specific. ")
                         .schema(StringSchema())
                     )
 
@@ -843,7 +969,8 @@ open class OpenApiConfig {
             .get(
                 Operation()
                     .addTagsItem(MHD)
-                    .summary("Any url can be used for retrieval of a raw document. See [document binary](https://care-connect-documents-api.netlify.app/api_documents_binary.html)")
+                    .summary("Any url can be used for retrieval of a raw document.")
+                    .description("See [document binary](https://care-connect-documents-api.netlify.app/api_documents_binary.html)")
                     .responses(getApiResponsesBinary())
                     .addParametersItem(Parameter()
                         .name("id")
@@ -859,195 +986,9 @@ open class OpenApiConfig {
 
         // QuestionnaireResponse
 
-        var questionnaireResponseItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(FORMS)
-                    .summary("Query Form Results")
-                    .description("This allows querying results of a QuestionnaireResponse")
-                    .addParametersItem(Parameter()
-                        .name("patient")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The patient that is the subject of the questionnaire response")
-                        .schema(StringSchema().example("073eef49-81ee-4c2e-893b-bc2e4efd2630"))
-                    )
-                    .addParametersItem(Parameter()
-                        .name("patient:identifier")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Who/what is the subject of the questionnaire response. `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
-                        .schema(StringSchema())
-                    )
-                    /*    .addParametersItem(Parameter()
-                            .name("questionnaire")
-                            .`in`("query")
-                            .required(false)
-                            .style(Parameter.StyleEnum.SIMPLE)
-                            .description("The questionnaire the answers are provided for")
-                            .schema(StringSchema())
-                            .example("https://example.fhir.nhs.uk/Questionnaire/Simple-Blood-Pressure")
-                        )*/
-                    .responses(getApiResponses())
-            )
 
-        oas.path("/FHIR/R4/QuestionnaireResponse",questionnaireResponseItem)
 
-        questionnaireResponseItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(FORMS)
-                    .summary("Read Endpoint")
-                    .responses(getApiResponses())
-                    .addParametersItem(Parameter()
-                        .name("id")
-                        .`in`("path")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The ID of the resource")
-                        .schema(StringSchema())
-                    )
-            )
 
-        oas.path("/FHIR/R4/QuestionnaireResponse/{id}",questionnaireResponseItem)
-
-        var serviceRequestItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(WORKFLOW)
-                    .summary("Query Referrals and Orders")
-                    .addParametersItem(Parameter()
-                        .name("patient")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by patient")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("patient:identifier")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Who/what is the subject of the service request. `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("owner")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by service request owner")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("requester")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by requester")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("status")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by task status")
-                        .schema(StringSchema())
-                    )
-                    .responses(getApiResponses())
-            )
-
-        oas.path("/FHIR/R4/ServiceRequest",serviceRequestItem)
-
-        serviceRequestItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(WORKFLOW)
-                    .summary("Read Endpoint")
-                    .responses(getApiResponses())
-                    .addParametersItem(Parameter()
-                        .name("id")
-                        .`in`("path")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The ID of the resource")
-                        .schema(StringSchema())
-                    )
-            )
-
-        oas.path("/FHIR/R4/ServiceRequest/{id}",serviceRequestItem)
-
-        var taskItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(WORKFLOW)
-                    .summary("Query Tasks")
-                    .addParametersItem(Parameter()
-                        .name("patient")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by patient")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("patient:identifier")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Who/what is the subject of the task. `https://fhir.nhs.uk/Id/nhs-number|{nhsNumber}` ")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("owner")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by task owner")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("requester")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by task requester")
-                        .schema(StringSchema())
-                    )
-                    .addParametersItem(Parameter()
-                        .name("status")
-                        .`in`("query")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("Search by task status")
-                        .schema(StringSchema())
-                    )
-                    .responses(getApiResponses())
-            )
-
-        oas.path("/FHIR/R4/Task",taskItem)
-
-        taskItem = PathItem()
-            .get(
-                Operation()
-                    .addTagsItem(WORKFLOW)
-                    .summary("Read Endpoint")
-                    .responses(getApiResponses())
-                    .addParametersItem(Parameter()
-                        .name("id")
-                        .`in`("path")
-                        .required(false)
-                        .style(Parameter.StyleEnum.SIMPLE)
-                        .description("The ID of the resource")
-                        .schema(StringSchema())
-                    )
-            )
-
-        oas.path("/FHIR/R4/Task/{id}",taskItem)
 
         val metadataItem = PathItem()
             .get(

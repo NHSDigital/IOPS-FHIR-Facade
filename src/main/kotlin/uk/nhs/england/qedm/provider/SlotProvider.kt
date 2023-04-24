@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.annotation.Search
 import ca.uhn.fhir.rest.param.DateRangeParam
 import ca.uhn.fhir.rest.param.ReferenceParam
 import ca.uhn.fhir.rest.param.StringParam
+import ca.uhn.fhir.rest.param.TokenOrListParam
 import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
@@ -16,30 +17,30 @@ import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class EncounterProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val awsPatient: AWSPatient)  {
+class SlotProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val awsPatient: AWSPatient)  {
 
 
-    @Read(type = Encounter::class)
-    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Encounter? {
+    @Read(type = Slot::class)
+    fun read(httpRequest : HttpServletRequest, @IdParam internalId: IdType): Slot? {
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, null, null)
-        return if (resource is Encounter) resource else null
+        return if (resource is Slot) resource else null
     }
 
-    @Search(type = Encounter::class)
+    @Search(type = Slot::class)
     fun search(
         httpRequest : HttpServletRequest,
-        @OptionalParam(name = Encounter.SP_PATIENT) encounter : ReferenceParam?,
-        @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
-        @OptionalParam(name = Encounter.SP_DATE)  date : DateRangeParam?,
-        @OptionalParam(name = Encounter.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Encounter.SP_RES_ID)  resid : StringParam?,
-        @OptionalParam(name = "_revinclude")  revinclude : StringParam?,
+        @OptionalParam(name = Slot.SP_START)  date : DateRangeParam?,
+        @OptionalParam(name = Slot.SP_SPECIALTY)  specialty :TokenOrListParam?,
+        @OptionalParam(name = Slot.SP_STATUS)  active :TokenParam?,
+        @OptionalParam(name = Slot.SP_SCHEDULE) schedule :ReferenceParam?,
+        @OptionalParam(name = Slot.SP_IDENTIFIER)  identifier :TokenParam?,
+        @OptionalParam(name = Slot.SP_RES_ID)  resid : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
-        val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
+        val queryString = awsPatient.processQueryString(httpRequest.queryString,null)
 
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString,"Encounter")
+        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString,"Slot")
         if (resource != null && resource is Bundle) {
             return resource
         }

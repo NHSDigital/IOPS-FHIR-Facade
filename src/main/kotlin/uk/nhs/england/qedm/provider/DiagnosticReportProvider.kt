@@ -4,10 +4,7 @@ import ca.uhn.fhir.rest.annotation.IdParam
 import ca.uhn.fhir.rest.annotation.OptionalParam
 import ca.uhn.fhir.rest.annotation.Read
 import ca.uhn.fhir.rest.annotation.Search
-import ca.uhn.fhir.rest.param.DateRangeParam
-import ca.uhn.fhir.rest.param.ReferenceParam
-import ca.uhn.fhir.rest.param.StringParam
-import ca.uhn.fhir.rest.param.TokenParam
+import ca.uhn.fhir.rest.param.*
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
@@ -33,7 +30,7 @@ class DiagnosticReportProvider(var cognitoAuthInterceptor: CognitoAuthIntercepto
         @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = DiagnosticReport.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = DiagnosticReport.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = DiagnosticReport.SP_CODE)  status :TokenParam?,
+        @OptionalParam(name = DiagnosticReport.SP_CODE)  status: TokenOrListParam?,
         @OptionalParam(name = DiagnosticReport.SP_RES_ID)  resid : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?

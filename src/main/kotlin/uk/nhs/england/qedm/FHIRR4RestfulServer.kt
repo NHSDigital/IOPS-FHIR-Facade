@@ -3,9 +3,11 @@ package uk.nhs.england.qedm
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.rest.api.EncodingEnum
 import ca.uhn.fhir.rest.server.RestfulServer
+import com.amazonaws.services.sqs.AmazonSQS
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.nhs.england.qedm.interceptor.AWSAuditEventLoggingInterceptor
 import uk.nhs.england.qedm.interceptor.CapabilityStatementInterceptor
+import uk.nhs.england.qedm.interceptor.ValidationInterceptor
 import uk.nhs.england.qedm.provider.*
 import java.util.*
 import javax.servlet.annotation.WebServlet
@@ -14,6 +16,7 @@ import javax.servlet.annotation.WebServlet
 @WebServlet("/FHIR/R4/*", loadOnStartup = 1, displayName = "FHIR Facade")
 class FHIRR4RestfulServer(
     @Qualifier("R4") fhirContext: FhirContext,
+    val sqs : AmazonSQS,
     val fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties,
     val messageProperties: uk.nhs.england.qedm.configuration.MessageProperties,
     val encounterProvider: EncounterProvider,
@@ -22,8 +25,9 @@ class FHIRR4RestfulServer(
     val medicationRequestProvider: MedicationRequestProvider,
     val medicationStatementProvider: MedicationStatementProvider,
 
-    val serviceRequestProvider: ServiceRequestProvider,
-    val taskProvider: TaskProvider,
+    val appointmentProvider: AppointmentProvider,
+    val slotProvider: SlotProvider,
+    val scheduleProvider: ScheduleProvider,
 
     val allergyIntoleranceProvider: AllergyIntoleranceProvider,
     val conditionProvider: ConditionProvider,
@@ -39,8 +43,6 @@ class FHIRR4RestfulServer(
     val specimenProvider: SpecimenProvider,
     val consentProvider: ConsentProvider,
     val questionnaireResponseProvider: QuestionnaireResponseProvider,
-    val questionnairePlainProvider: QuestionnairePlainProvider,
-    val questionnaireProvider: QuestionnaireProvider,
     val valueSetProvider: ValueSetProvider,
     val transactionProvider: TransactionProvider
 
@@ -53,13 +55,13 @@ class FHIRR4RestfulServer(
 
         registerProvider(encounterProvider)
         registerProvider(episodeOfCarePlainProvider)
+        registerProvider(appointmentProvider)
+        registerProvider(slotProvider)
+        registerProvider(scheduleProvider)
 
         registerProvider(medicationDispenseProvider)
         registerProvider(medicationRequestProvider)
         registerProvider(medicationStatementProvider)
-
-        registerProvider(taskProvider)
-        registerProvider(serviceRequestProvider)
 
         registerProvider(allergyIntoleranceProvider)
         registerProvider(conditionProvider)
@@ -74,9 +76,6 @@ class FHIRR4RestfulServer(
         registerProvider(consentProvider)
 
         registerProvider(questionnaireResponseProvider)
-        registerProvider(questionnaireProvider)
-        registerProvider(questionnairePlainProvider)
-
         registerProvider(observationSearchProvider)
         registerProvider(patientSearchProvider)
 
@@ -86,10 +85,15 @@ class FHIRR4RestfulServer(
         val awsAuditEventLoggingInterceptor =
             AWSAuditEventLoggingInterceptor(
                 this.fhirContext,
-                fhirServerProperties
+                fhirServerProperties,
+                messageProperties,
+                sqs
             )
         interceptorService.registerInterceptor(awsAuditEventLoggingInterceptor)
         registerInterceptor(CapabilityStatementInterceptor(fhirServerProperties))
+
+        val validationInterceptor = ValidationInterceptor(fhirContext,messageProperties)
+        interceptorService.registerInterceptor(validationInterceptor)
 
 
         isDefaultPrettyPrint = true

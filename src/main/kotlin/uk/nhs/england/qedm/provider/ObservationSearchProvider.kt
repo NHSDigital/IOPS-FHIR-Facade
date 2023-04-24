@@ -29,7 +29,7 @@ class ObservationSearchProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = Observation.SP_DATE)  date : DateRangeParam?,
         @OptionalParam(name = Observation.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = Observation.SP_CODE) code :TokenParam?,
+        @OptionalParam(name = Observation.SP_CODE) code :TokenOrListParam?,
         @OptionalParam(name = Observation.SP_CATEGORY)  category: TokenParam?,
         @OptionalParam(name = Observation.SP_RES_ID)  resid : StringParam?,
         @OptionalParam(name = Observation.SP_STATUS, )  status: TokenOrListParam?,

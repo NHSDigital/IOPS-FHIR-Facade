@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.Read
 import ca.uhn.fhir.rest.annotation.Search
 import ca.uhn.fhir.rest.param.ReferenceParam
 import ca.uhn.fhir.rest.param.StringParam
+import ca.uhn.fhir.rest.param.TokenOrListParam
 import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
@@ -32,7 +33,7 @@ class MedicationStatementProvider(var cognitoAuthInterceptor: CognitoAuthInterce
         @OptionalParam(name = MedicationStatement.SP_PATIENT) patient : ReferenceParam?,
         @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = MedicationStatement.SP_IDENTIFIER)  identifier :TokenParam?,
-        @OptionalParam(name = MedicationStatement.SP_STATUS)  status :TokenParam?,
+        @OptionalParam(name = MedicationStatement.SP_STATUS)  status: TokenOrListParam?,
         @OptionalParam(name = MedicationStatement.SP_RES_ID)  resid : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,
         @OptionalParam(name = "_count")  count : StringParam?

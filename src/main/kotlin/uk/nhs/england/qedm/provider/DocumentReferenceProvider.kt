@@ -3,6 +3,7 @@ package uk.nhs.england.qedm.provider
 import ca.uhn.fhir.rest.annotation.*
 import ca.uhn.fhir.rest.param.DateRangeParam
 import ca.uhn.fhir.rest.param.StringParam
+import ca.uhn.fhir.rest.param.TokenOrListParam
 import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
@@ -44,6 +45,8 @@ class DocumentReferenceProvider(var cognitoAuthInterceptor: CognitoAuthIntercept
         @OptionalParam(name = DocumentReference.SP_PATIENT) patient : TokenParam?,
         @OptionalParam(name = "patient:identifier") nhsNumber : TokenParam?,
         @OptionalParam(name = DocumentReference.SP_DATE) date : DateRangeParam?,
+        @OptionalParam(name = DocumentReference.SP_TYPE) type : TokenOrListParam?,
+        @OptionalParam(name = "custodian:identifier") typeIdentifier : TokenOrListParam?,
         @OptionalParam(name = DocumentReference.SP_IDENTIFIER)  identifier :TokenParam?,
         @OptionalParam(name = DocumentReference.SP_RES_ID)  resid : StringParam?,
         @OptionalParam(name = "_getpages")  pages : StringParam?,

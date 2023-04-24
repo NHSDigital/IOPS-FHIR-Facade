@@ -10,12 +10,14 @@ import ca.uhn.fhir.rest.api.RequestTypeEnum
 import ca.uhn.fhir.rest.api.server.RequestDetails
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails
+import com.amazonaws.services.sqs.AmazonSQS
+import com.amazonaws.services.sqs.model.SendMessageRequest
 import org.apache.commons.lang3.StringUtils
 import org.hl7.fhir.instance.model.api.IBaseResource
 import org.hl7.fhir.r4.model.*
 import org.slf4j.LoggerFactory
 import uk.nhs.england.qedm.configuration.FHIRServerProperties
-import uk.nhs.england.qedm.util.FhirSystems
+import uk.nhs.england.qedm.configuration.MessageProperties
 import java.io.IOException
 import java.util.*
 import javax.servlet.ServletException
@@ -25,14 +27,13 @@ import javax.servlet.http.HttpServletResponse
 @Interceptor
 class AWSAuditEventLoggingInterceptor(
     private val ctx: FhirContext,
-    private val fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties
+    private val fhirServerProperties: FHIRServerProperties,
+    private val messageProperties: MessageProperties,
+    private val sqs: AmazonSQS
 )
  {
-
     //  IGenericClient awsClient;
     //   AmazonSQS sqs;
-
-
 
 
     private val log = LoggerFactory.getLogger("FHIRAudit")
@@ -220,16 +221,13 @@ class AWSAuditEventLoggingInterceptor(
         } else {
             log.info(audit)
         }
-        /*
-        String queueName = MessageProperties.getAwsQueueName();
-        GetQueueUrlResult queueUrl= sqs.getQueueUrl(queueName);
-        SendMessageRequest send_msg_request = new SendMessageRequest()
-                .withQueueUrl(queueUrl.getQueueUrl())
+        if (messageProperties.getAWSQueueEnabled()) {
+            val send_msg_request = SendMessageRequest()
+                .withQueueUrl(sqs!!.getQueueUrl(messageProperties.getAwsQueueName()).getQueueUrl())
                 .withMessageBody(audit)
-                .withDelaySeconds(5);
-        sqs.sendMessage(send_msg_request);
-
-         */
+                .withDelaySeconds(5)
+            sqs!!.sendMessage(send_msg_request)
+        }
     }
 
     fun addAWSOutComeException(auditEvent: AuditEvent, exception: Exception) {
