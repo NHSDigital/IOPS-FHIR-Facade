@@ -575,7 +575,7 @@ open class OpenApiConfig {
                     )
             )
         oas.path("/FHIR/R4/Encounter",encounterItem)
-
+/*
         var episodeOfCareItem = PathItem()
             .get(
                 Operation()
@@ -620,7 +620,7 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/EpisodeOfCare",episodeOfCareItem)
-
+*/
         val appointmentItem = PathItem()
             .get(
                 Operation()
@@ -664,7 +664,7 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/Appointment",appointmentItem)
-
+/*
         val scheduleItem = PathItem()
             .get(
                 Operation()
@@ -700,7 +700,9 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/Schedule",scheduleItem)
+*/
 
+        /*
         val slotItem = PathItem()
             .get(
                 Operation()
@@ -744,7 +746,7 @@ open class OpenApiConfig {
             )
 
         oas.path("/FHIR/R4/Slot",slotItem)
-
+*/
         // MedicationRequest
         var medicationRequestItem = PathItem()
             .get(

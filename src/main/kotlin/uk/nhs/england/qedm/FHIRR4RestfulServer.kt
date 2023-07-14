@@ -20,14 +20,14 @@ class FHIRR4RestfulServer(
     val fhirServerProperties: uk.nhs.england.qedm.configuration.FHIRServerProperties,
     val messageProperties: uk.nhs.england.qedm.configuration.MessageProperties,
     val encounterProvider: EncounterProvider,
-    val episodeOfCarePlainProvider: EpisodeOfCarePlainProvider,
+   // val episodeOfCarePlainProvider: EpisodeOfCarePlainProvider,
     val medicationDispenseProvider: MedicationDispenseProvider,
     val medicationRequestProvider: MedicationRequestProvider,
     val medicationStatementProvider: MedicationStatementProvider,
 
     val appointmentProvider: AppointmentProvider,
-    val slotProvider: SlotProvider,
-    val scheduleProvider: ScheduleProvider,
+   // val slotProvider: SlotProvider,
+   // val scheduleProvider: ScheduleProvider,
 
     val allergyIntoleranceProvider: AllergyIntoleranceProvider,
     val conditionProvider: ConditionProvider,
@@ -41,7 +41,7 @@ class FHIRR4RestfulServer(
     val documentReferenceProvider: DocumentReferenceProvider,
     val binaryProvider: BinaryProvider,
     val specimenProvider: SpecimenProvider,
-    val consentProvider: ConsentProvider,
+    //val consentProvider: ConsentProvider,
     val questionnaireResponseProvider: QuestionnaireResponseProvider,
     val valueSetProvider: ValueSetProvider,
     val transactionProvider: TransactionProvider
@@ -54,10 +54,10 @@ class FHIRR4RestfulServer(
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
         registerProvider(encounterProvider)
-        registerProvider(episodeOfCarePlainProvider)
+     //   registerProvider(episodeOfCarePlainProvider)
         registerProvider(appointmentProvider)
-        registerProvider(slotProvider)
-        registerProvider(scheduleProvider)
+     //   registerProvider(slotProvider)
+     //   registerProvider(scheduleProvider)
 
         registerProvider(medicationDispenseProvider)
         registerProvider(medicationRequestProvider)
@@ -72,8 +72,8 @@ class FHIRR4RestfulServer(
 
         registerProvider(binaryProvider)
         registerProvider(documentReferenceProvider)
-        registerProvider(specimenProvider)
-        registerProvider(consentProvider)
+     //   registerProvider(specimenProvider)
+     //   registerProvider(consentProvider)
 
         registerProvider(questionnaireResponseProvider)
         registerProvider(observationSearchProvider)
