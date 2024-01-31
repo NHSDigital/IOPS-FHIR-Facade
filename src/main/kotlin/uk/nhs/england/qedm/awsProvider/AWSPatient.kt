@@ -84,9 +84,14 @@ class AWSPatient (val messageProperties: MessageProperties, val awsClient: IGene
                 val name: String = java.net.URLDecoder.decode(param.split("=").get(0), StandardCharsets.UTF_8.name())
                 val value: String = param.split("=").get(1)
                 val newvalue: String = java.net.URLDecoder.decode(param.split("=").get(1), StandardCharsets.UTF_8.name())
-                if (patient != null && name.equals("patient:identifier")) {
-                    newParams.add( "patient=" + patient.idElement.idPart)
-                } else if (name.equals("_content")) {
+                if (name.equals("patient:identifier")) {
+                    if (patient != null) {
+                        newParams.add("patient=" + patient.idElement.idPart)
+                    } else {
+                        newParams.add("patient=PATIENT_NOT_FOUND_NHS_NUMBER")
+                    }
+                }
+                else if (name.equals("_content")) {
                     newParams.add("title=$value")
                 } else if (name.equals("_total")) {
                     //newParams.add("title=$value")

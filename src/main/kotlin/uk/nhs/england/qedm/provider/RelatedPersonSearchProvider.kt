@@ -59,7 +59,9 @@ class RelatedPersonSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterce
         @OptionalParam(name = "_count")  count : StringParam?
     ): Bundle? {
         val queryString = awsPatient.processQueryString(httpRequest.queryString,nhsNumber)
-        val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString, "RelatedPerson")
+
+        val resource: Resource? =
+            cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo, queryString, "RelatedPerson")
         if (resource != null && resource is Bundle) {
             return resource
         }
