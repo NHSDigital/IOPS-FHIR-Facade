@@ -27,6 +27,48 @@ class AWSPatient (val messageProperties: MessageProperties, val awsClient: IGene
 
     private val log = LoggerFactory.getLogger("FHIRAudit")
 
+    fun update(patient: Patient, internalId: IdType?): MethodOutcome? {
+        var response: MethodOutcome? = null
+
+        var retry = 3
+        while (retry > 0) {
+            try {
+                response = awsClient!!.update().resource(patient).withId(internalId).execute()
+                log.info("AWS Patient updated " + response.resource.idElement.value)
+                break
+            } catch (ex: Exception) {
+                // do nothing
+                log.error(ex.message)
+                retry--
+                if (retry == 0) throw ex
+            }
+        }
+        return response
+
+    }
+    fun create(newPatient: Patient): MethodOutcome? {
+        val awsBundle: Bundle? = null
+        var response: MethodOutcome? = null
+
+        var retry = 3
+        while (retry > 0) {
+            try {
+                response = awsClient
+                    .create()
+                    .resource(newPatient)
+                    .execute()
+                val patient = response.resource as Patient
+                break
+            } catch (ex: Exception) {
+                // do nothing
+                log.error(ex.message)
+                retry--
+                if (retry == 0) throw ex
+            }
+        }
+        return response
+    }
+
     fun processQueryString(httpString: String?, nhsNumber : TokenParam? ) : String? {
         var queryString: String? = httpString
         if (queryString != null) {

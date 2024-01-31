@@ -132,27 +132,7 @@ class MessageProperties {
         } else value.toInt()
     }
 
-    private fun <T : Enum<*>?> getPropertyEnum(thePropertyName: String, theEnumType: Class<T>, theDefaultValue: T): T {
-        val value = getProperty(thePropertyName, theDefaultValue!!.name)
-        return java.lang.Enum.valueOf(theEnumType, value) as T
-    }
 
-
-    fun getEmailEnabled(): Boolean? {
-        return getPropertyBoolean("email.enabled", false)
-    }
-
-    fun getEmailHost(): String? {
-        return getProperty("email.host")
-    }
-
-    fun getEmailPort(): Int? {
-        return getPropertyInteger("email.port", 0)
-    }
-
-    fun getEmailUsername(): String? {
-        return getProperty("email.username")
-    }
 
     fun getEmailPassword(): String? {
         return getProperty("email.password")

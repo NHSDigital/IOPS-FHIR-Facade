@@ -44,7 +44,9 @@ class FHIRR4RestfulServer(
     //val consentProvider: ConsentProvider,
     val questionnaireResponseProvider: QuestionnaireResponseProvider,
     val valueSetProvider: ValueSetProvider,
-    val transactionProvider: TransactionProvider
+    val transactionProvider: TransactionProvider,
+    val relatedPersonSearchProvider: RelatedPersonSearchProvider,
+    val flagSearchProvider: FlagSearchProvider
 
 ) : RestfulServer(fhirContext) {
 
@@ -78,6 +80,8 @@ class FHIRR4RestfulServer(
         registerProvider(questionnaireResponseProvider)
         registerProvider(observationSearchProvider)
         registerProvider(patientSearchProvider)
+        registerProvider(relatedPersonSearchProvider)
+        registerProvider(flagSearchProvider)
 
         registerProvider(valueSetProvider)
         registerProvider(transactionProvider)

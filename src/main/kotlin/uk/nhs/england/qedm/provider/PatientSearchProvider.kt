@@ -9,17 +9,39 @@ import ca.uhn.fhir.rest.param.TokenParam
 import ca.uhn.fhir.rest.server.IResourceProvider
 import org.hl7.fhir.r4.model.*
 import org.springframework.stereotype.Component
+import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import javax.servlet.http.HttpServletRequest
 
 @Component
-class PatientSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor) {
+class PatientSearchProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val awsPatient: AWSPatient) {
 
+    @Create
+    fun create(
+        theRequest: HttpServletRequest,
+        @ResourceParam patient: Patient,
+    ): MethodOutcome? {
+        return awsPatient.create(patient)
+    }
+
+    @Update
+    fun update(
+        theRequest: HttpServletRequest,
+        @ResourceParam patient: Patient,
+        @IdParam theId: IdType?,
+        @ConditionalUrlParam theConditional : String?,
+        theRequestDetails: RequestDetails?
+    ): MethodOutcome? {
+
+        return awsPatient.update(patient, theId)
+
+    }
     @Read(type=Patient::class)
     fun read( httpRequest : HttpServletRequest,@IdParam internalId: IdType): Patient? {
         val resource: Resource? = cognitoAuthInterceptor.readFromUrl(httpRequest.pathInfo,  null, null)
         return if (resource is Patient) resource else null
     }
+
     @Search(type = Patient::class)
     fun search(
         httpRequest : HttpServletRequest,

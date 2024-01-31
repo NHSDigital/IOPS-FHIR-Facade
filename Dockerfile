@@ -1,11 +1,8 @@
-
-
-
-FROM openjdk:11.0.9
+FROM openjdk:23
 
 VOLUME /tmp
 
-ENV JAVA_OPTS="-Xms128m -Xmx1024m"
+ENV JAVA_OPTS="-Xms128m -Xmx4096m"
 
 ADD target/fhir-qedm.jar fhir-qedm.jar
 
