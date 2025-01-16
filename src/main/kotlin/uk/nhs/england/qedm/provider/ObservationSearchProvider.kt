@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.configuration.FHIRServerProperties
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 
 @Component

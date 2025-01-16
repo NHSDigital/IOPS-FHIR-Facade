@@ -10,7 +10,7 @@ import uk.nhs.england.qedm.interceptor.CapabilityStatementInterceptor
 import uk.nhs.england.qedm.interceptor.ValidationInterceptor
 import uk.nhs.england.qedm.provider.*
 import java.util.*
-import javax.servlet.annotation.WebServlet
+import jakarta.servlet.annotation.WebServlet
 
 
 @WebServlet("/FHIR/R4/*", loadOnStartup = 1, displayName = "FHIR Facade")

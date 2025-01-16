@@ -17,11 +17,13 @@ class CapabilityStatementInterceptor(
     @Hook(Pointcut.SERVER_CAPABILITY_STATEMENT_GENERATED)
     fun customize(theCapabilityStatement: IBaseConformance) {
 
-        // Cast to the appropriate version
         val cs: CapabilityStatement = theCapabilityStatement as CapabilityStatement
-
-        cs.implementation.url = fhirServerProperties.server.baseUrl + "/FHIR/R4"
-        cs.implementation.description = "NHS England UKCore API Reference Implementation"
+        cs.name = fhirServerProperties.server.name
+        cs.software.name = fhirServerProperties.server.name
+        cs.software.version = fhirServerProperties.server.version
+        cs.publisher = "NHS England"
+        cs.implementation.url = fhirServerProperties.server.baseUrl
+        cs.implementation.description = fhirServerProperties.server.name
     }
 
     fun getResourceComponent(type : String, cs : CapabilityStatement ) : CapabilityStatement.CapabilityStatementRestResourceComponent? {

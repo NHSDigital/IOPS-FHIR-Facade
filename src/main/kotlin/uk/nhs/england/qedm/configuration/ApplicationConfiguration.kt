@@ -18,7 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 import uk.nhs.england.qedm.provider.ValueSetProvider.Companion.logger
 import uk.nhs.england.qedm.util.CorsFilter
-import javax.servlet.Filter
+import jakarta.servlet.Filter
 
 @Configuration
 open class ApplicationConfiguration(
@@ -47,19 +47,6 @@ open class ApplicationConfiguration(
         return client
     }
 
-    @Bean
-    fun corsFilter(): FilterRegistrationBean<*>? {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.allowCredentials = true
-        config.addAllowedOrigin("*")
-        config.addAllowedHeader("*")
-        config.addAllowedMethod("*")
-        source.registerCorsConfiguration("/**", config)
-        val bean: FilterRegistrationBean<*> = FilterRegistrationBean<Filter>(CorsFilter())
-        bean.order = 0
-        return bean
-    }
 
     @Bean
     fun getSQS(): AmazonSQS {

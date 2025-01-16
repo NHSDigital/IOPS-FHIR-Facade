@@ -8,7 +8,7 @@ import uk.nhs.england.qedm.awsProvider.AWSPatient
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 @Component
 class EpisodeOfCarePlainProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor,

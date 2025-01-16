@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import uk.nhs.england.qedm.awsProvider.AWSBinary
 import uk.nhs.england.qedm.interceptor.CognitoAuthInterceptor
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 @Component
 class BinaryProvider(var cognitoAuthInterceptor: CognitoAuthInterceptor, val awsBinary: AWSBinary) : IResourceProvider {
